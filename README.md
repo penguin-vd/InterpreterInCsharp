@@ -22,3 +22,9 @@ let adder = fn(x) { fn(y) { x + y } };
 let addTwo = adder(2);
 addTwo(3);
 ```
+
+## Future Features
+
+- String (Data type)
+- Loops
+- Standard Library (very minimal)
