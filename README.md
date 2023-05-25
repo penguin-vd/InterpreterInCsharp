@@ -7,6 +7,8 @@
 - Functions
 - Variables
 - JIT Interpreter
+- Comments
+- If Else statements
 
 ## Example Code
 
@@ -27,6 +29,12 @@ let adder = fn(x){
     }};
 let addTwo = adder(2);
 addTwo(3);
+
+if (10 < 5) {
+    x + y;
+} else {
+    x * y;
+}
 ```
 
 ## Future Features
