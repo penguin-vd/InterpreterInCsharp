@@ -67,7 +67,7 @@ public struct Identifier : Expression {
 
 public struct IntergerLiteral : Expression {
     public Token TheToken;
-    public int Value;
+    public long Value;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
     public string String() => TheToken.Literal;

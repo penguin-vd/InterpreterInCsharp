@@ -71,6 +71,11 @@ public class Lexer
                 tok = new Token(TokenType.ASTERISK, ch.ToString());
                 break;
             case '/':
+                if (PeekChar() == '/') {
+                    SkipLine();
+                    tok = NextToken();
+                    break;
+                }
                 tok = new Token(TokenType.SLASH, ch.ToString());
                 break;
             case '<':
@@ -127,6 +132,12 @@ public class Lexer
         if (keywords.Keys.Contains(ident))
             return keywords[ident];
         return TokenType.IDENT;
+    }
+
+    private void SkipLine() {
+        while (!(ch == '\n')) {
+            ReadChar();
+        }
     }
 
     private void SkipWhitespace() {

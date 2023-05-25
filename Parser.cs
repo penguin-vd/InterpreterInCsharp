@@ -176,7 +176,7 @@ public class Parser
     private Expression? ParseIntegerLiteral() {
         IntergerLiteral literal = new IntergerLiteral() {TheToken = curToken};
 
-        if (!int.TryParse(curToken.Literal, out int value)) {
+        if (!long.TryParse(curToken.Literal, out long value)) {
             Errors.Add($"could not parse {curToken.Literal} as integer");
             return null;
         }

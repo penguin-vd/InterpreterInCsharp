@@ -18,7 +18,7 @@ public interface IObject {
 }
 
 public struct Integer : IObject {
-    public int Value;
+    public long Value;
     public ObjectType Type() => ObjectType.INTEGER;
     public string Inspect() => $"{Value}";
 }

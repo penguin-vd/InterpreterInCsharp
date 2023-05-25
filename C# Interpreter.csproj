@@ -6,10 +6,7 @@
     <RootNamespace>C__Interpreter</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="newtonsoft.json" Version="13.0.3" />
-  </ItemGroup>
 
 </Project>

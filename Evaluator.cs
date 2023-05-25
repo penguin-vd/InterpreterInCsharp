@@ -140,8 +140,8 @@ public static class Evaluator
     }
 
     private static IObject EvalIntegerInfixExpression(string op, IObject left, IObject right) {
-        int leftVal = ((Integer)left).Value;
-        int rightVal = ((Integer)right).Value;
+        long leftVal = ((Integer)left).Value;
+        long rightVal = ((Integer)right).Value;
         switch (op) {
             case "+":
                 return new Integer() { Value = leftVal + rightVal};
