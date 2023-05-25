@@ -16,15 +16,15 @@ let x = 20;
 let y = 10;
 y + x;
 
-// this would be a function
+// This would be a function
 let add = fn(x, y) { return x + y; };
 add(10, 2);
 
-// whitespace does not matter for functions
-let adder = fn(x)
-    { fn(y)
-        { x + y }
-    };
+// Whitespace does not matter for functions
+let adder = fn(x){
+    fn(y) { 
+    x + y; 
+    }};
 let addTwo = adder(2);
 addTwo(3);
 ```
