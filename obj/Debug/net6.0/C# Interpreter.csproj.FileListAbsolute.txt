@@ -1,0 +1,17 @@
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\bin\Debug\net6.0\C# Interpreter.exe
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\bin\Debug\net6.0\C# Interpreter.deps.json
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\bin\Debug\net6.0\C# Interpreter.runtimeconfig.json
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\bin\Debug\net6.0\C# Interpreter.dll
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\bin\Debug\net6.0\C# Interpreter.pdb
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.csproj.AssemblyReference.cache
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.AssemblyInfoInputs.cache
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.AssemblyInfo.cs
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.csproj.CoreCompileInputs.cache
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.dll
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\refint\C# Interpreter.dll
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.pdb
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.genruntimeconfig.cache
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\ref\C# Interpreter.dll
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\dolke\OneDrive\Documenten\C# Interpreter\obj\Debug\net6.0\C# Interpreter.csproj.CopyComplete
