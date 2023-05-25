@@ -22,7 +22,7 @@ y + x;
 let add = fn(x, y) { return x + y; };
 add(10, 2);
 
-// Whitespace does not matter for functions
+// Whitespace does not matter
 let adder = fn(x){
     fn(y) { 
     x + y; 
