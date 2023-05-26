@@ -4,6 +4,7 @@
 
 - Int
 - Bool
+- String
 - Functions
 - Variables
 - JIT Interpreter
@@ -18,9 +19,13 @@ let x = 20;
 let y = 10;
 y + x;
 
+let hello = "Hello ";
+let world = "World";
+
 // This would be a function
 let add = fn(x, y) { return x + y; };
 add(10, 2);
+add(hello, world);
 
 // Whitespace does not matter
 let adder = fn(x){
@@ -39,6 +44,5 @@ if (10 < 5) {
 
 ## Future Features
 
-- String (Data type)
 - Loops
 - Standard Library (very minimal)
