@@ -17,29 +17,23 @@
 // Declare variables
 let x = 20;
 let y = 10;
-y + x;
-
-let hello = "Hello ";
-let world = "World";
+println(y + x); // You can comment inline
 
 // This would be a function
 let add = fn(x, y) { return x + y; };
-add(10, 2);
-add(hello, world);
+println(add(10, 2));
 
 // Whitespace does not matter
 let adder = fn(x){
-    fn(y) { 
-    x + y; 
+    fn(y) {
+    x + y;
     }};
 let addTwo = adder(2);
-addTwo(3);
+println(addTwo(3));
 
-if (10 < 5) {
-    x + y;
-} else {
-    x * y;
-}
+// This function would als work with strings
+let hello = adder("Hello, ");
+println(hello("World!"));
 ```
 
 ## Future Features
