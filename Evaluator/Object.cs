@@ -10,12 +10,20 @@ public enum ObjectType {
     NULL,
     RETURN_VALUE,
     ERROR,
-    FUNCTION
+    FUNCTION,
+    BUILTIN,
+    EXIT
 }
 
 public interface IObject {
     public ObjectType Type();
     public string Inspect();
+}
+
+public struct ExitObj : IObject {
+    public int Value;
+    public ObjectType Type() => ObjectType.EXIT;
+    public string Inspect() => $"{Value}";
 }
 
 public struct Integer : IObject {
@@ -64,4 +72,11 @@ public struct StringObj : IObject {
     public string Value;
     public ObjectType Type() => ObjectType.STRING;
     public string Inspect() => Value;
+}
+
+public delegate IObject BuiltinFunction(params IObject[] args);
+public struct BuiltinObj : IObject {
+    public BuiltinFunction Function;
+    public ObjectType Type() => ObjectType.BUILTIN;
+    public string Inspect() => "builtin function";
 }

@@ -2,6 +2,7 @@ namespace lexer;
 public enum TokenType {
     ILLEGAL,
     EOF,
+    COMMENT,
 
     // Identifiers + literals
     IDENT,

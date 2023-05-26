@@ -1,6 +1,7 @@
 using objects;
 using ast;
 using enviroment;
+using BuiltinFn;
 
 namespace Eval;
 public static class Evaluator
@@ -8,6 +9,12 @@ public static class Evaluator
     public static readonly BooleanObj TRUE = new BooleanObj() {Value = true};
     public static readonly BooleanObj FALSE = new BooleanObj() {Value = false};
     public static readonly Null NULL = new Null();
+    public static Dictionary<string, IObject> Builtins = new() {
+        {"len", new BuiltinObj() { Function = BuiltinFunctions.GetLength } },
+        {"println", new BuiltinObj() { Function = BuiltinFunctions.PrintLine } },
+        {"print", new BuiltinObj() {Function = BuiltinFunctions.Print } },
+        {"exit", new BuiltinObj() {Function = BuiltinFunctions.Exit } }
+    };
     public static IObject Eval(Node node, Env env) {
         switch (node) {
             case AstProgram program:
@@ -74,6 +81,8 @@ public static class Evaluator
             if (result.Type() == ObjectType.RETURN_VALUE)
                 return ((ReturnValue)result).Value;
             if (result.Type() == ObjectType.ERROR)
+                return result;
+            if (result.Type() == ObjectType.EXIT)
                 return result;
         }
         return result;
@@ -200,6 +209,8 @@ public static class Evaluator
         var res = env.GetObject(node.Value);
         if (res != null)
             return res;
+        if (Builtins.ContainsKey(node.Value))
+            return Builtins[node.Value];
         return NewError("identifier not found: " + node.Value);
     }
 
@@ -215,12 +226,18 @@ public static class Evaluator
     }
 
     private static IObject ApplyFunction(IObject fn, List<IObject> args) {
-        if (fn.Type() != ObjectType.FUNCTION)
-            return NewError("not a function: {0}", fn.Type());
-        Function function = (Function)fn;
-        var extEnv = ExtendFunctionEnv(function, args);
-        var evalutated = Eval(function.Body, extEnv);
-        return UnWrapReturnValue(evalutated);
+        switch (fn.Type()) {
+            case ObjectType.FUNCTION:
+                Function function = (Function)fn;
+                var extEnv = ExtendFunctionEnv(function, args);
+                var evalutated = Eval(function.Body, extEnv);
+                return UnWrapReturnValue(evalutated);
+            case ObjectType.BUILTIN:
+                return ((BuiltinObj)fn).Function(args.ToArray());
+            default:
+                return NewError("not a function: {0}", fn.Type());
+        }
+
     }
 
     private static Env ExtendFunctionEnv(Function fn, List<IObject> args) {
@@ -254,6 +271,4 @@ public static class Evaluator
         return false;
 
     }
-
-
 }

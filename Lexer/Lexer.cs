@@ -72,8 +72,7 @@ public class Lexer
                 break;
             case '/':
                 if (PeekChar() == '/') {
-                    SkipLine();
-                    tok = NextToken();
+                    tok = new Token(TokenType.COMMENT, SkipLine());
                     break;
                 }
                 tok = new Token(TokenType.SLASH, ch.ToString());
@@ -137,10 +136,12 @@ public class Lexer
         return TokenType.IDENT;
     }
 
-    private void SkipLine() {
-        while (!(ch == '\n')) {
+    private string SkipLine() {
+        int oldPos = position + 1;
+        while (ch != '\n') {
             ReadChar();
         }
+        return Input.Substring(oldPos, position - oldPos);
     }
 
     private void SkipWhitespace() {

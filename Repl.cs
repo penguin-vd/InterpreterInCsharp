@@ -24,6 +24,10 @@ static public class Repl
                     continue;
                 }
                 var evalutated = Evaluator.Eval(program, env);
+                if (evalutated.Type() == ObjectType.EXIT) {
+                    Console.WriteLine($"exited the program with code {((ExitObj)evalutated).Value}");
+                    break;
+                }
                 if (evalutated.Type() != ObjectType.NULL) {
                     Console.WriteLine(evalutated.Inspect());
                 }

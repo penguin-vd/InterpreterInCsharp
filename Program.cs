@@ -8,9 +8,10 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        if (args.Length == 0)
+        if (args.Length == 0) {
             StartRepl();
-
+            return;
+        }
         OpenFile(args[0]);
     }
     private static void StartRepl()
