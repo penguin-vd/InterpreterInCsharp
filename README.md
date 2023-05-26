@@ -73,3 +73,4 @@ if (_name == "_main") {
 
 - Loops
 - Standard Library (very minimal)
+- Arrays
