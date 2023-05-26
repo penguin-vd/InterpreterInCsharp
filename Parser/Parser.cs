@@ -44,6 +44,7 @@ public class Parser
         RegisterPrefix(TokenType.LPAREN, ParseGroundedExpression);
         RegisterPrefix(TokenType.IF, ParseIfExpression);
         RegisterPrefix(TokenType.FUNCTION, ParseFunctionLiteral);
+        RegisterPrefix(TokenType.STRING, ParseStringLiteral);
 
         infixParseFns = new Dictionary<TokenType, InfixParseFn>();
         RegisterInfix(TokenType.EQ, ParseInfixExpression);
@@ -302,6 +303,8 @@ public class Parser
         return args;
 
     }
+
+    private Expression ParseStringLiteral() => new StringLiteral() { TheToken = curToken, Value = curToken.Literal };
 
     private bool CurTokenIs(TokenType t) => curToken.Type == t;
     private bool PeekTokenIs(TokenType t) => peekToken.Type == t;

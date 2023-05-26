@@ -157,3 +157,11 @@ public struct CallExpression : Expression{
         return $"{Function.String()}({string.Join(", ", args)})";
     }
 }
+
+public struct StringLiteral : Expression {
+    public Token TheToken;
+    public string Value;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public string String() => TheToken.Literal;
+}

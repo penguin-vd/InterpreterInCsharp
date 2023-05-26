@@ -6,6 +6,7 @@ public enum TokenType {
     // Identifiers + literals
     IDENT,
     INT,
+    STRING,
 
     // Operators
     ASSIGN,

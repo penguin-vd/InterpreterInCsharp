@@ -84,6 +84,9 @@ public class Lexer
             case '>':
                 tok = new Token(TokenType.GT, ch.ToString());
                 break;
+            case '"':
+                tok = new Token(TokenType.STRING, ReadString());
+                break;
             case eof:
                 tok = new Token(TokenType.EOF, ch.ToString());
                 break;
@@ -150,5 +153,15 @@ public class Lexer
         if (readPosition >= Input.Length)
             return eof;
         else return Input[readPosition];
+    }
+
+    private string ReadString() {
+        int oldPos = position + 1;
+        while (true) {
+            ReadChar();
+            if (ch == '"' || ch == eof)
+                break;
+        }
+        return Input.Substring(oldPos, position - oldPos);
     }
 }

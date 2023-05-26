@@ -22,6 +22,8 @@ public static class Evaluator
                 return new Integer() {Value = intergerLiteral.Value};
             case BooleanExpression boolean:
                 return NativeBoolToBooleanObj(boolean.Value);
+            case StringLiteral stringLiteral:
+                return new StringObj() { Value = stringLiteral.Value };
             case PrefixExpression prefix:
                 var preRight = Eval(prefix.Right, env);
                 if (IsError(preRight))
@@ -124,11 +126,14 @@ public static class Evaluator
     }
 
     private static IObject EvalInfixExpression(string op, IObject left, IObject right) {
+        if (left.Type() != right.Type())
+            return NewError("type mismatch: {0} {1} {2}", left.Type(), op, right.Type());
+
         if (left.Type() == ObjectType.INTEGER && right.Type() == ObjectType.INTEGER)
             return EvalIntegerInfixExpression(op, left, right);
 
-        if (left.Type() != right.Type())
-            return NewError("type mismatch: {0} {1} {2}", left.Type(), op, right.Type());
+        if (left.Type() == ObjectType.STRING && right.Type() == ObjectType.STRING)
+            return EvalStringInfixExpression(op, left, right);
 
         switch (op) {
             case "==":
@@ -155,6 +160,21 @@ public static class Evaluator
                 return NativeBoolToBooleanObj(leftVal < rightVal);
             case ">":
                 return NativeBoolToBooleanObj(leftVal > rightVal);
+            case "==":
+                return NativeBoolToBooleanObj(leftVal == rightVal);
+            case "!=":
+                return NativeBoolToBooleanObj(leftVal != rightVal);
+            default:
+                return NewError("unknown operator: {0} {1} {2}", left.Type(), op, right.Type());
+        }
+    }
+
+    private static IObject EvalStringInfixExpression(string op, IObject left, IObject right) {
+        string leftVal = ((StringObj)left).Value;
+        string rightVal = ((StringObj)right).Value;
+        switch (op) {
+            case "+":
+                return new StringObj() {Value = leftVal + rightVal};
             case "==":
                 return NativeBoolToBooleanObj(leftVal == rightVal);
             case "!=":

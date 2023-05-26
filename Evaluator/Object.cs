@@ -6,6 +6,7 @@ namespace objects;
 public enum ObjectType {
     INTEGER,
     BOOLEAN,
+    STRING,
     NULL,
     RETURN_VALUE,
     ERROR,
@@ -57,4 +58,10 @@ public struct Function : IObject {
             p[i] = Parameters[i].String();
         return $"fn({string.Join(", ", p)}) {"{\n"}{Body.String()}{"\n}"}";
     }
+}
+
+public struct StringObj : IObject {
+    public string Value;
+    public ObjectType Type() => ObjectType.STRING;
+    public string Inspect() => Value;
 }
