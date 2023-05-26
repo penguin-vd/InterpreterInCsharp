@@ -12,8 +12,12 @@ public static class Evaluator
     public static Dictionary<string, IObject> Builtins = new() {
         {"len", new BuiltinObj() { Function = BuiltinFunctions.GetLength } },
         {"println", new BuiltinObj() { Function = BuiltinFunctions.PrintLine } },
-        {"print", new BuiltinObj() {Function = BuiltinFunctions.Print } },
-        {"exit", new BuiltinObj() {Function = BuiltinFunctions.Exit } }
+        {"print", new BuiltinObj() { Function = BuiltinFunctions.Print } },
+        {"exit", new BuiltinObj() { Function = BuiltinFunctions.Exit } },
+        {"read", new BuiltinObj() { Function = BuiltinFunctions.Read} },
+        {"toInt", new BuiltinObj() { Function = BuiltinFunctions.ToInt } },
+        {"toStr", new BuiltinObj() { Function = BuiltinFunctions.ToString } },
+        {"isDigit", new BuiltinObj() { Function = BuiltinFunctions.IsDigit } },
     };
     public static IObject Eval(Node node, Env env) {
         switch (node) {

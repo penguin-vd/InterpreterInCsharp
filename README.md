@@ -36,6 +36,23 @@ let hello = adder("Hello, ");
 println(hello("World!"));
 ```
 
+## If Statement Example
+
+``` bigl
+// A quick program with if statements
+let name = read("Please enter your name: ")
+let getAge = fn() {
+    let age = read("Please enter your age: ")
+    if (isDigit(age)) {
+        return toInt(age);
+    } else { println("Please enter a digit!"); return getAge(); }
+}
+
+let age = getAge();
+println("Name: " + name + ", Age: " + toStr(age));
+
+```
+
 ## Future Features
 
 - Loops

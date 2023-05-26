@@ -71,7 +71,7 @@ public struct Function : IObject {
 public struct StringObj : IObject {
     public string Value;
     public ObjectType Type() => ObjectType.STRING;
-    public string Inspect() => Value;
+    public string Inspect() => $"'{Value}'";
 }
 
 public delegate IObject BuiltinFunction(params IObject[] args);

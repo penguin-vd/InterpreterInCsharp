@@ -18,3 +18,10 @@ println(addTwo(3));
 // This function would als work with strings
 let hello = adder("Hello, ");
 println(hello("World!"));
+
+// Read input from a user
+let name = read("Please enter your name: ")
+println("Hello " + name + "!");
+
+// Convert string to int
+
