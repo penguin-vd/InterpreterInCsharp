@@ -57,3 +57,4 @@ println("Name: " + name + ", Age: " + toStr(age));
 
 - Loops
 - Standard Library (very minimal)
+- Arrays
