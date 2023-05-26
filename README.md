@@ -10,6 +10,7 @@
 - JIT Interpreter
 - Comments
 - If Else statements
+- Include
 
 ## Example Code
 
@@ -31,16 +32,27 @@ let adder = fn(x){
 let addTwo = adder(2);
 println(addTwo(3));
 
-// This function would als work with strings
+// The function types do not matter
 let hello = adder("Hello, ");
 println(hello("World!"));
 ```
 
-## If Statement Example
+## Include Example
+
+### main.bigl
 
 ``` bigl
-// A quick program with if statements
+include("getage") // reference could also be getage.bigl
+
+// A quick program with include
 let name = read("Please enter your name: ")
+let age = getAge();
+println("Name: " + name + ", Age: " + toStr(age));
+```
+
+### getage.bigl
+
+``` bigl
 let getAge = fn() {
     let age = read("Please enter your age: ")
     if (isDigit(age)) {
@@ -48,9 +60,13 @@ let getAge = fn() {
     } else { println("Please enter a digit!"); return getAge(); }
 }
 
-let age = getAge();
-println("Name: " + name + ", Age: " + toStr(age));
+let main = fn() {
+    println("This is not call in the function")
+}
 
+if (_name == "_main") {
+    main();
+}
 ```
 
 ## Future Features

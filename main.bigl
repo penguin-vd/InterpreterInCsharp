@@ -1,0 +1,6 @@
+include("getage")
+
+// A quick program with include
+let name = read("Please enter your name: ")
+let age = getAge();
+println("Name: " + name + ", Age: " + toStr(age));

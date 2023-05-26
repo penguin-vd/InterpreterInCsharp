@@ -27,10 +27,12 @@ public static class Program
             using (StreamReader reader = new(file)){
                 Lexer lexer = new Lexer(reader.ReadToEnd());
                 Parser parser = new Parser(lexer);
-                Env env = new();
+                Env env = new Env();
+                env.Set("_name", new StringObj() { Value = "_main" });
                 var evalutated = Evaluator.Eval(parser.ParseProgram(), env);
                 if (evalutated.Type() != ObjectType.NULL)
-                    Console.WriteLine(evalutated.Inspect()); };
+                    Console.WriteLine(evalutated.Inspect());
+                };
             } catch (FileNotFoundException) {
                 Console.WriteLine($"File {file} was not found.");
             }

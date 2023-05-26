@@ -18,6 +18,7 @@ public static class Evaluator
         {"toInt", new BuiltinObj() { Function = BuiltinFunctions.ToInt } },
         {"toStr", new BuiltinObj() { Function = BuiltinFunctions.ToString } },
         {"isDigit", new BuiltinObj() { Function = BuiltinFunctions.IsDigit } },
+        {"include", new IncludeObj() { Function = BuiltinFunctions.Include } }
     };
     public static IObject Eval(Node node, Env env) {
         switch (node) {
@@ -57,6 +58,8 @@ public static class Evaluator
                 var letVal = Eval(letStatement.Value, env);
                 if (IsError(letVal))
                     return letVal;
+                if (Builtins.ContainsKey(letStatement.Name.Value))
+                    return NewError("{0} is a builtin function", letStatement.Name.Value);
                 env.Set(letStatement.Name.Value, letVal);
                 break;
             case Identifier identifier:
@@ -73,7 +76,7 @@ public static class Evaluator
                 var callArgs = EvalExpressions(callExpression.Arguments, env);
                 if (callArgs.Count == 1 && IsError(callArgs[0]))
                     return callArgs[0];
-                return ApplyFunction(function, callArgs);
+                return ApplyFunction(function, callArgs, env);
         }
         return NULL;
     }
@@ -213,8 +216,9 @@ public static class Evaluator
         var res = env.GetObject(node.Value);
         if (res != null)
             return res;
-        if (Builtins.ContainsKey(node.Value))
+        if (Builtins.ContainsKey(node.Value)) {
             return Builtins[node.Value];
+        }
         return NewError("identifier not found: " + node.Value);
     }
 
@@ -229,7 +233,7 @@ public static class Evaluator
         return result;
     }
 
-    private static IObject ApplyFunction(IObject fn, List<IObject> args) {
+    private static IObject ApplyFunction(IObject fn, List<IObject> args, Env env) {
         switch (fn.Type()) {
             case ObjectType.FUNCTION:
                 Function function = (Function)fn;
@@ -238,6 +242,8 @@ public static class Evaluator
                 return UnWrapReturnValue(evalutated);
             case ObjectType.BUILTIN:
                 return ((BuiltinObj)fn).Function(args.ToArray());
+            case ObjectType.INCLUDE:
+                return env.AddEnv(((IncludeObj)fn).Function(args.ToArray()));
             default:
                 return NewError("not a function: {0}", fn.Type());
         }

@@ -90,7 +90,7 @@ public class Lexer
                 tok = new Token(TokenType.EOF, ch.ToString());
                 break;
             default:
-                if (char.IsLetter(ch)) {
+                if (char.IsLetter(ch) || ch == '_') {
                     string literal = ReadIdentifier();
                     TokenType tokenType = LookupIdent(literal);
                     return new Token(tokenType, literal);
@@ -116,7 +116,7 @@ public class Lexer
 
     private string ReadIdentifier() {
         int oldPos = position;
-        while (char.IsLetter(ch)) {
+        while (char.IsLetter(ch) || ch == '_') {
             ReadChar();
         }
         return Input.Substring(oldPos, position - oldPos);

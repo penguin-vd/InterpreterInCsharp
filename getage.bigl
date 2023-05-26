@@ -1,5 +1,3 @@
-// A quick program with if statements
-let name = read("Please enter your name: ")
 let getAge = fn() {   
     let age = read("Please enter your age: ")
     if (isDigit(age)) {
@@ -7,5 +5,10 @@ let getAge = fn() {
     } else { println("Please enter a digit!"); return getAge(); }
 }
 
-let age = getAge();
-println("Name: " + name + ", Age: " + toStr(age));
+let main = fn() {
+    println("This is not call in the function")
+}
+
+if (_name == "_main") {
+    main();
+}

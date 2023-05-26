@@ -12,7 +12,8 @@ public enum ObjectType {
     ERROR,
     FUNCTION,
     BUILTIN,
-    EXIT
+    EXIT,
+    INCLUDE
 }
 
 public interface IObject {
@@ -79,4 +80,11 @@ public struct BuiltinObj : IObject {
     public BuiltinFunction Function;
     public ObjectType Type() => ObjectType.BUILTIN;
     public string Inspect() => "builtin function";
+}
+
+public delegate Env IncludeFunction(params IObject[] args);
+public struct IncludeObj : IObject {
+    public IncludeFunction Function;
+    public ObjectType Type() => ObjectType.INCLUDE;
+    public string Inspect() => "include function";
 }

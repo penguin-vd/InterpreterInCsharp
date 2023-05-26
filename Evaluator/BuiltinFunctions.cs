@@ -1,12 +1,14 @@
 using objects;
+using enviroment;
 using Eval;
+using lexer;
 
 namespace BuiltinFn;
 public static class BuiltinFunctions {
     public static readonly Null NULL = new Null();
     public static IObject GetLength(params IObject[] args) {
         if (args.Length != 1)
-            return NewError($"Wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0].Type()) {
             case ObjectType.STRING:
@@ -18,7 +20,7 @@ public static class BuiltinFunctions {
 
     public static IObject PrintLine(params IObject[] args) {
         if (args.Length != 1)
-            return NewError($"Wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0].Type()) {
             case ObjectType.STRING:
@@ -36,7 +38,7 @@ public static class BuiltinFunctions {
     }
     public static IObject Print(params IObject[] args) {
         if (args.Length != 1)
-            return NewError($"Wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0].Type()) {
             case ObjectType.STRING:
@@ -52,7 +54,7 @@ public static class BuiltinFunctions {
 
     public static IObject ToInt(params IObject[] args) {
         if (args.Length != 1)
-            return NewError($"Wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0]) {
             case StringObj str:
@@ -72,7 +74,7 @@ public static class BuiltinFunctions {
 
     public static IObject IsDigit(params IObject[] args) {
         if (args.Length != 1)
-            return NewError($"Wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0]) {
             case StringObj str:
@@ -94,7 +96,7 @@ public static class BuiltinFunctions {
 
     public static IObject ToString(params IObject[] args) {
         if (args.Length != 1)
-            return NewError($"Wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0]) {
             case StringObj:
@@ -112,7 +114,33 @@ public static class BuiltinFunctions {
         return new ExitObj() { Value = 0 };
     }
 
+    public static Env Include(params IObject[] args) {
+        if (args.Length != 1)
+            return new Env() { Store = new Dictionary<string, IObject>() {{"ERROR", NewError("wrong number of arguments. got {0} want 1", args.Length)}}};
+
+        if (args[0].Type() != ObjectType.STRING)
+            return new Env() { Store = new Dictionary<string, IObject>() {{"ERROR", NewError("argument not supported, include wants a STRING", args.Length)}}};
+
+        string fileName = ((StringObj)args[0]).Value;
+        if (!fileName.Contains('.'))
+            fileName += ".bigl";
+
+        try {
+            using (StreamReader reader = new StreamReader(fileName)) {
+                Lexer l = new Lexer(reader.ReadToEnd());
+                Parser p = new Parser(l);
+                Env env = new Env();
+                env.Set("_name", new StringObj() { Value = "_include" });
+                Evaluator.Eval(p.ParseProgram(), env);
+                return env;
+            }
+        } catch (FileNotFoundException) {
+            return new Env() { Store = new Dictionary<string, IObject>() {{"ERROR", NewError("file {0} was not found", fileName)}}};
+        }
+    }
+
     private static Error NewError(string format, params object[] args) {
         return new Error() {Message = string.Format(format, args)};
     }
+
 }
