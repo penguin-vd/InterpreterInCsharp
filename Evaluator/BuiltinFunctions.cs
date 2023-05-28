@@ -125,18 +125,42 @@ public static class BuiltinFunctions {
         if (!fileName.Contains('.'))
             fileName += ".bigl";
 
-        try {
+        if (File.Exists(fileName)) {
             using (StreamReader reader = new StreamReader(fileName)) {
                 Lexer l = new Lexer(reader.ReadToEnd());
                 Parser p = new Parser(l);
                 Env env = new Env();
                 env.Set("_name", new StringObj() { Value = "_include" });
                 Evaluator.Eval(p.ParseProgram(), env);
-                return env;
-            }
-        } catch (FileNotFoundException) {
-            return new Env() { Store = new Dictionary<string, IObject>() {{"ERROR", NewError("file {0} was not found", fileName)}}};
+                return env; }
         }
+        var pathOut = Path();
+        if (pathOut.Type() == ObjectType.ERROR)
+            return new Env() { Store = new Dictionary<string, IObject>() {{"ERROR", pathOut}}};
+
+        string path = ((StringObj)pathOut).Value + $"\\{fileName}";
+        if (File.Exists(path)) {
+             using (StreamReader reader = new StreamReader(path)) {
+                Lexer l = new Lexer(reader.ReadToEnd());
+                Parser p = new Parser(l);
+                Env env = new Env();
+                env.Set("_name", new StringObj() { Value = "_include" });
+                Evaluator.Eval(p.ParseProgram(), env);
+                return env; }
+        }
+
+        return new Env() { Store = new Dictionary<string, IObject>() {{"ERROR", NewError("file {0} was not found", fileName)}}};
+    }
+
+    public static IObject Path(params IObject[] args) {
+        if (args.Length != 0)
+            return NewError("wrong number of arguments. got {args.Length} want 1");
+
+        string? path = Environment.GetEnvironmentVariable("bigl", EnvironmentVariableTarget.User);
+        if (path != null)
+            return new StringObj() { Value = path };
+
+        return NewError("path of 'bigl' was not set correctly");
     }
 
     private static Error NewError(string format, params object[] args) {

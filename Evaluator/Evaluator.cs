@@ -18,7 +18,8 @@ public static class Evaluator
         {"toInt", new BuiltinObj() { Function = BuiltinFunctions.ToInt } },
         {"toStr", new BuiltinObj() { Function = BuiltinFunctions.ToString } },
         {"isDigit", new BuiltinObj() { Function = BuiltinFunctions.IsDigit } },
-        {"include", new IncludeObj() { Function = BuiltinFunctions.Include } }
+        {"include", new IncludeObj() { Function = BuiltinFunctions.Include } },
+        {"path", new BuiltinObj() { Function = BuiltinFunctions.Path } }
     };
     public static IObject Eval(Node node, Env env) {
         switch (node) {
