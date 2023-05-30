@@ -80,7 +80,7 @@ public struct Function : IObject {
 public struct StringObj : IObject, IHashable {
     public string Value;
     public ObjectType Type() => ObjectType.STRING;
-    public string Inspect() => $"'{Value}'";
+    public string Inspect() => $"{Value}";
     public HashKey HashKey() => new HashKey(this);
 }
 

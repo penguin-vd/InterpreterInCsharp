@@ -14,6 +14,8 @@ public static class BuiltinFunctions {
                 return new Integer() { Value = ((StringObj)args[0]).Value.Length };
             case ObjectType.ARRAY:
                 return new Integer() { Value = ((ArrayObj)args[0]).Elements.Count };
+            case ObjectType.HASH:
+                return new Integer() { Value = ((Hash)args[0]).Pairs.Count };
             default:
                 return NewError("argument to `len` not supported, got {0}", args[0].Type());
         }
@@ -23,43 +25,15 @@ public static class BuiltinFunctions {
         if (args.Length != 1)
             return NewError($"wrong number of arguments. got {args.Length} want 1");
 
-        switch (args[0]) {
-            case StringObj String:
-                Console.WriteLine(String.Value);
-                return Evaluator.NULL;
-            case Integer integer:
-                Console.WriteLine(integer.Value);
-                return Evaluator.NULL;
-            case BooleanObj boolean:
-                Console.WriteLine(boolean.Value);
-                return Evaluator.NULL;
-            case ArrayObj arr:
-                Console.WriteLine(arr.Inspect());
-                return Evaluator.NULL;
-            default:
-                return NewError("argument to `print` not supported, got {0}", args[0].Type());
-        }
+        Console.WriteLine(args[0].Inspect());
+        return Evaluator.NULL;
     }
     public static IObject Print(params IObject[] args) {
         if (args.Length != 1)
             return NewError($"wrong number of arguments. got {args.Length} want 1");
 
-        switch (args[0]) {
-            case StringObj String:
-                Console.Write(String.Value);
-                return Evaluator.NULL;
-            case Integer integer:
-                Console.Write(integer.Value);
-                return Evaluator.NULL;
-            case BooleanObj boolean:
-                Console.Write(boolean.Value);
-                return Evaluator.NULL;
-            case ArrayObj arr:
-                Console.Write(arr.Inspect());
-                return Evaluator.NULL;
-            default:
-                return NewError("argument to `print` not supported, got {0}", args[0].Type());
-        }
+        Console.Write(args[0].Inspect());
+        return Evaluator.NULL;
     }
 
     public static IObject ToInt(params IObject[] args) {

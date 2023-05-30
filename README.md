@@ -12,6 +12,7 @@
 - If Else statements
 - Include
 - Arrays
+- Hashes
 
 ## Example Code
 
@@ -45,12 +46,16 @@ println(hello("World!"));
 let name = read("Please enter your name: ")
 println("Hello, " + name + "!");
 
-// Convert string to int
+// Arrays
 let a = [1, 2, 3, 4];
 let b = push(a, 5);
 println(a);
 println(b);
 println(map(b, fn (x) { x * 2 }));
+
+// Hashes
+let person = {"name": name, "age": 69};
+println(person);
 ```
 
 ## Include Example
