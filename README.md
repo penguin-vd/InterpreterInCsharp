@@ -11,6 +11,7 @@
 - Comments
 - If Else statements
 - Include
+- Arrays
 
 ## Example Code
 
