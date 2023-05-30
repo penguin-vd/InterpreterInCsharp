@@ -98,5 +98,3 @@ if (_name == "_main") {
 ## Future Features
 
 - Loops
-- Standard Library (very minimal)
-- Arrays
