@@ -96,6 +96,8 @@ public static class Evaluator
                 if (IsError(index))
                     return index;
                 return EvalIndexExpression(left, index);
+            case HashLiteral hashLiteral:
+                return EvalHashLiteral(hashLiteral, env);
         }
         return NULL;
     }
@@ -255,14 +257,46 @@ public static class Evaluator
     private static IObject EvalIndexExpression(IObject left, IObject index) {
         if (left.Type() == ObjectType.ARRAY && index.Type() == ObjectType.INTEGER)
             return EvalArrayIndexExpression((ArrayObj)left, (Integer)index);
+        if (left.Type() == ObjectType.HASH)
+            return EvalHashIndexExpression((Hash)left, index);
         return NewError("index operator not supported: {0}", left.Type());
     }
 
     private static IObject EvalArrayIndexExpression(ArrayObj array, Integer index) {
         long idx = index.Value;
         if (0 > idx || idx > array.Elements.Count)
-            return NewError("index out of range");
+            return NULL;
         return array.Elements[(int)idx];
+    }
+
+    private static IObject EvalHashIndexExpression(Hash hash, IObject index) {
+        if (index is not IHashable)
+            return NewError("unusable as has key: {0}", index.Type());
+
+        if (!hash.Pairs.ContainsKey((index as IHashable).HashKey()))
+            return NULL;
+
+        return hash.Pairs[(index as IHashable).HashKey()].Value;
+    }
+
+    private static IObject EvalHashLiteral(HashLiteral node, Env env) {
+        var pairs = new Dictionary<HashKey, HashPair>();
+        foreach (var kvpNode in node.Pairs) {
+            var key = Eval(kvpNode.Key, env);
+            if (IsError(key))
+                return key;
+
+            if (key is not IHashable)
+                return NewError("unusable as has key: {0}", key.Type());
+
+            var value = Eval(kvpNode.Value, env);
+            if (IsError(value))
+                return value;
+
+
+            pairs[(key as IHashable).HashKey()] = new HashPair() { Key = key, Value = value };
+        }
+        return new Hash() { Pairs = pairs };
     }
 
     private static IObject ApplyFunction(IObject fn, List<IObject> args, Env env) {
@@ -279,7 +313,6 @@ public static class Evaluator
             default:
                 return NewError("not a function: {0}", fn.Type());
         }
-
     }
 
     private static Env ExtendFunctionEnv(Function fn, List<IObject> args) {

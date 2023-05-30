@@ -188,3 +188,20 @@ public struct IndexExpression : Expression {
     public string TokenLiteral() => TheToken.Literal;
     public override string ToString() => $"({Left}[{Index}])";
 }
+
+public struct HashLiteral : Expression {
+    public Token TheToken;
+    public Dictionary<Expression, Expression> Pairs;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() {
+        string[] pairs = new string[Pairs.Count];
+        int i = 0;
+        foreach (var kvp in Pairs) {
+            pairs[i] = $"{kvp.Key}:{kvp.Value}";
+            i++;
+        }
+        return $"{'{'}{string.Join(", ", pairs)}{'}'}";
+    }
+
+}

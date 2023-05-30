@@ -14,12 +14,17 @@ public enum ObjectType {
     BUILTIN,
     EXIT,
     INCLUDE,
-    ARRAY
+    ARRAY,
+    HASH
 }
 
 public interface IObject {
     public ObjectType Type();
     public string Inspect();
+}
+
+public interface IHashable {
+    public HashKey HashKey();
 }
 
 public struct ExitObj : IObject {
@@ -28,16 +33,18 @@ public struct ExitObj : IObject {
     public string Inspect() => $"{Value}";
 }
 
-public struct Integer : IObject {
+public struct Integer : IObject, IHashable {
     public long Value;
     public ObjectType Type() => ObjectType.INTEGER;
     public string Inspect() => $"{Value}";
+    public HashKey HashKey() => new HashKey(this);
 }
 
-public struct BooleanObj : IObject {
+public struct BooleanObj : IObject, IHashable {
     public bool Value;
     public ObjectType Type() => ObjectType.BOOLEAN;
     public string Inspect() => $"{Value}";
+    public HashKey HashKey() => new HashKey(this);
 }
 
 public struct Null : IObject {
@@ -70,10 +77,11 @@ public struct Function : IObject {
     }
 }
 
-public struct StringObj : IObject {
+public struct StringObj : IObject, IHashable {
     public string Value;
     public ObjectType Type() => ObjectType.STRING;
     public string Inspect() => $"'{Value}'";
+    public HashKey HashKey() => new HashKey(this);
 }
 
 public delegate IObject BuiltinFunction(params IObject[] args);
@@ -99,5 +107,51 @@ public struct ArrayObj : IObject {
             elements[i] = Elements[i].Inspect();
 
         return $"[{string.Join(", ", elements)}]";
+    }
+}
+
+public struct HashKey {
+    public ObjectType Type;
+    public UInt64 Value;
+
+    public HashKey(BooleanObj boolean) {
+        if (boolean.Value)
+            Value = 1;
+        else Value = 0;
+
+        Type = boolean.Type();
+    }
+
+    public HashKey(Integer interger) {
+        Value = (UInt64)interger.Value;
+        Type = interger.Type();
+    }
+
+    public HashKey(StringObj stringObj) {
+        char[] chars = stringObj.Value.ToArray();
+        Value = 0;
+        foreach (char ch in chars)
+            Value += ((byte)ch);
+        Type = ObjectType.STRING;
+    }
+}
+
+public struct HashPair {
+    public IObject Key;
+    public IObject Value;
+}
+
+public struct Hash : IObject
+{
+    public Dictionary<HashKey, HashPair> Pairs;
+    public ObjectType Type() => ObjectType.HASH;
+    public string Inspect() {
+        string[] pairs = new string[Pairs.Count];
+        int i = 0;
+        foreach (var kvp in Pairs) {
+            pairs[i] = $"{kvp.Value.Key.Inspect()}: {kvp.Value.Value.Inspect()}";
+            i++;
+        }
+        return $"{'{'}{string.Join(", ", pairs)}{'}'}";
     }
 }

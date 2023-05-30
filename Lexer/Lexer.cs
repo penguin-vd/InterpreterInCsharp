@@ -92,6 +92,9 @@ public class Lexer
             case ']':
                 tok = new Token(TokenType.RBRACKET, ch.ToString());
                 break;
+            case ':':
+                tok = new Token(TokenType.COLON, ch.ToString());
+                break;
             case eof:
                 tok = new Token(TokenType.EOF, ch.ToString());
                 break;

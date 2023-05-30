@@ -48,6 +48,7 @@ public class Parser
         RegisterPrefix(TokenType.FUNCTION, ParseFunctionLiteral);
         RegisterPrefix(TokenType.STRING, ParseStringLiteral);
         RegisterPrefix(TokenType.LBRACKET, ParseArrayLiteral);
+        RegisterPrefix(TokenType.LBRACE, ParseHashLiteral);
 
         infixParseFns = new Dictionary<TokenType, InfixParseFn>();
         RegisterInfix(TokenType.EQ, ParseInfixExpression);
@@ -313,6 +314,27 @@ public class Parser
         if (!ExpectPeek(TokenType.RBRACKET))
             return null;
         return exp;
+    }
+
+    private Expression? ParseHashLiteral() {
+        HashLiteral hash = new HashLiteral() { TheToken = curToken };
+        hash.Pairs = new Dictionary<Expression, Expression>();
+        while (!PeekTokenIs(TokenType.RBRACE)) {
+            NextToken();
+            var key = ParseExpression(Precedence.LOWEST);
+            if (!ExpectPeek(TokenType.COLON))
+                return null;
+
+            NextToken();
+            var value = ParseExpression(Precedence.LOWEST);
+            hash.Pairs[key] = value;
+            if (!PeekTokenIs(TokenType.RBRACE) && !ExpectPeek(TokenType.COMMA))
+                return null;
+        }
+        if (!ExpectPeek(TokenType.RBRACE))
+            return null;
+
+        return hash;
     }
 
     private bool CurTokenIs(TokenType t) => curToken.Type == t;
