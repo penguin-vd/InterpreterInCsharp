@@ -1,4 +1,4 @@
-include("getage")
+include("functions")
 
 // A quick program with include
 let name = read("Please enter your name: ")

@@ -19,7 +19,11 @@ public static class Evaluator
         {"toStr", new BuiltinObj() { Function = BuiltinFunctions.ToString } },
         {"isDigit", new BuiltinObj() { Function = BuiltinFunctions.IsDigit } },
         {"include", new IncludeObj() { Function = BuiltinFunctions.Include } },
-        {"path", new BuiltinObj() { Function = BuiltinFunctions.Path } }
+        {"path", new BuiltinObj() { Function = BuiltinFunctions.Path } },
+        {"first", new BuiltinObj() { Function = BuiltinFunctions.First } },
+        {"last", new BuiltinObj() { Function = BuiltinFunctions.Last } },
+        {"push", new BuiltinObj() { Function = BuiltinFunctions.Push } },
+        {"rest", new BuiltinObj() { Function = BuiltinFunctions.Rest } }
     };
     public static IObject Eval(Node node, Env env) {
         switch (node) {
@@ -78,6 +82,20 @@ public static class Evaluator
                 if (callArgs.Count == 1 && IsError(callArgs[0]))
                     return callArgs[0];
                 return ApplyFunction(function, callArgs, env);
+            case ArrayLiteral arrayLiteral:
+                var elements = EvalExpressions(arrayLiteral.Elements, env);
+                if (elements.Count == 1 && IsError(elements[0]))
+                    return elements[0];
+                return new ArrayObj() {Elements = elements};
+            case IndexExpression indexExpression:
+                var left = Eval(indexExpression.Left, env);
+                if (IsError(left))
+                    return left;
+
+                var index = Eval(indexExpression.Index, env);
+                if (IsError(index))
+                    return index;
+                return EvalIndexExpression(left, index);
         }
         return NULL;
     }
@@ -232,6 +250,19 @@ public static class Evaluator
             result.Add(evalutated);
         }
         return result;
+    }
+
+    private static IObject EvalIndexExpression(IObject left, IObject index) {
+        if (left.Type() == ObjectType.ARRAY && index.Type() == ObjectType.INTEGER)
+            return EvalArrayIndexExpression((ArrayObj)left, (Integer)index);
+        return NewError("index operator not supported: {0}", left.Type());
+    }
+
+    private static IObject EvalArrayIndexExpression(ArrayObj array, Integer index) {
+        long idx = index.Value;
+        if (0 > idx || idx > array.Elements.Count)
+            return NewError("index out of range");
+        return array.Elements[(int)idx];
     }
 
     private static IObject ApplyFunction(IObject fn, List<IObject> args, Env env) {

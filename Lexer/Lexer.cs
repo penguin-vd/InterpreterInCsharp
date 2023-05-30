@@ -86,6 +86,12 @@ public class Lexer
             case '"':
                 tok = new Token(TokenType.STRING, ReadString());
                 break;
+            case '[':
+                tok = new Token(TokenType.LBRACKET, ch.ToString());
+                break;
+            case ']':
+                tok = new Token(TokenType.RBRACKET, ch.ToString());
+                break;
             case eof:
                 tok = new Token(TokenType.EOF, ch.ToString());
                 break;

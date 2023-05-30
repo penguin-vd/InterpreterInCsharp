@@ -13,7 +13,8 @@ public enum ObjectType {
     FUNCTION,
     BUILTIN,
     EXIT,
-    INCLUDE
+    INCLUDE,
+    ARRAY
 }
 
 public interface IObject {
@@ -64,8 +65,8 @@ public struct Function : IObject {
     public string Inspect() {
         string[] p = new string[Parameters.Count];
         for (int i = 0; i < Parameters.Count; i++)
-            p[i] = Parameters[i].String();
-        return $"fn({string.Join(", ", p)}) {"{\n"}{Body.String()}{"\n}"}";
+            p[i] = Parameters[i].ToString();
+        return $"fn({string.Join(", ", p)}) {"{\n"}{Body.ToString()}{"\n}"}";
     }
 }
 
@@ -87,4 +88,16 @@ public struct IncludeObj : IObject {
     public IncludeFunction Function;
     public ObjectType Type() => ObjectType.INCLUDE;
     public string Inspect() => "include function";
+}
+
+public struct ArrayObj : IObject {
+    public List<IObject> Elements;
+    public ObjectType Type() => ObjectType.ARRAY;
+    public string Inspect() {
+        string[] elements = new string[Elements.Count];
+        for (int i = 0; i < Elements.Count; i++)
+            elements[i] = Elements[i].Inspect();
+
+        return $"[{string.Join(", ", elements)}]";
+    }
 }

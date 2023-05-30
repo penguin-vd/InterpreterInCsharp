@@ -5,14 +5,15 @@ using lexer;
 
 namespace BuiltinFn;
 public static class BuiltinFunctions {
-    public static readonly Null NULL = new Null();
     public static IObject GetLength(params IObject[] args) {
         if (args.Length != 1)
             return NewError($"wrong number of arguments. got {args.Length} want 1");
 
         switch (args[0].Type()) {
             case ObjectType.STRING:
-                return new Integer() {Value = ((StringObj)args[0]).Value.Length };
+                return new Integer() { Value = ((StringObj)args[0]).Value.Length };
+            case ObjectType.ARRAY:
+                return new Integer() { Value = ((ArrayObj)args[0]).Elements.Count };
             default:
                 return NewError("argument to `len` not supported, got {0}", args[0].Type());
         }
@@ -22,15 +23,18 @@ public static class BuiltinFunctions {
         if (args.Length != 1)
             return NewError($"wrong number of arguments. got {args.Length} want 1");
 
-        switch (args[0].Type()) {
-            case ObjectType.STRING:
-                Console.WriteLine(((StringObj)args[0]).Value);
+        switch (args[0]) {
+            case StringObj String:
+                Console.WriteLine(String.Value);
                 return Evaluator.NULL;
-            case ObjectType.INTEGER:
-                Console.WriteLine(((Integer)args[0]).Value);
+            case Integer integer:
+                Console.WriteLine(integer.Value);
                 return Evaluator.NULL;
-            case ObjectType.BOOLEAN:
-                Console.WriteLine(((BooleanObj)args[0]).Value);
+            case BooleanObj boolean:
+                Console.WriteLine(boolean.Value);
+                return Evaluator.NULL;
+            case ArrayObj arr:
+                Console.WriteLine(arr.Inspect());
                 return Evaluator.NULL;
             default:
                 return NewError("argument to `print` not supported, got {0}", args[0].Type());
@@ -40,12 +44,18 @@ public static class BuiltinFunctions {
         if (args.Length != 1)
             return NewError($"wrong number of arguments. got {args.Length} want 1");
 
-        switch (args[0].Type()) {
-            case ObjectType.STRING:
-                Console.Write(((StringObj)args[0]).Value);
+        switch (args[0]) {
+            case StringObj String:
+                Console.Write(String.Value);
                 return Evaluator.NULL;
-            case ObjectType.INTEGER:
-                Console.Write(((Integer)args[0]).Value);
+            case Integer integer:
+                Console.Write(integer.Value);
+                return Evaluator.NULL;
+            case BooleanObj boolean:
+                Console.Write(boolean.Value);
+                return Evaluator.NULL;
+            case ArrayObj arr:
+                Console.Write(arr.Inspect());
                 return Evaluator.NULL;
             default:
                 return NewError("argument to `print` not supported, got {0}", args[0].Type());
@@ -154,7 +164,7 @@ public static class BuiltinFunctions {
 
     public static IObject Path(params IObject[] args) {
         if (args.Length != 0)
-            return NewError("wrong number of arguments. got {args.Length} want 1");
+            return NewError($"wrong number of arguments. got {args.Length} want 0");
 
         string? path = Environment.GetEnvironmentVariable("bigl", EnvironmentVariableTarget.User);
         if (path != null)
@@ -163,8 +173,58 @@ public static class BuiltinFunctions {
         return NewError("path of 'bigl' was not set correctly");
     }
 
+    public static IObject First(params IObject[] args) {
+        if (args.Length != 1)
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
+
+        if (args[0].Type() != ObjectType.ARRAY)
+            return NewError("argument to 'first' must be ARRAY got {0}", args[0].Type());
+
+        var arr = (ArrayObj)args[0];
+        if (arr.Elements.Count > 0)
+            return arr.Elements[0];
+
+        return Evaluator.NULL;
+    }
+
+    public static IObject Last(params IObject[] args) {
+        if (args.Length != 1)
+            return NewError($"wrong number of arguments. got {args.Length} want 1");
+
+        if (args[0].Type() != ObjectType.ARRAY)
+            return NewError("argument to 'first' must be ARRAY got {0}", args[0].Type());
+
+        var arr = (ArrayObj)args[0];
+        if (arr.Elements.Count > 0)
+            return arr.Elements.Last();
+
+        return Evaluator.NULL;
+    }
+
+    public static IObject Push(params IObject[] args) {
+        if (args.Length != 2)
+            return NewError("wrong number of arguments. got={0}, want=2", args.Length);
+        if (args[0].Type() != ObjectType.ARRAY)
+            return NewError("argument to `push` must be ARRAY, got {0}", args[0].Type());
+        var arr = (ArrayObj)args[0];
+        var newArr = new ArrayObj() { Elements = new List<IObject>(arr.Elements) };
+        newArr.Elements.Add(args[1]);
+        return newArr;
+    }
+
+    public static IObject Rest(params IObject[] args) {
+        if (args.Length != 1)
+            return NewError("wrong number of arguments. got={0}, want=1", args.Length);
+        if (args[0].Type() != ObjectType.ARRAY)
+            return NewError("argument to `rest` must be ARRAY, got {0}", args[0].Type());
+        var arr = (ArrayObj)args[0];
+        if (arr.Elements.Count > 0) {
+            return new ArrayObj() { Elements = arr.Elements.GetRange(1, arr.Elements.Count - 1) };
+        }
+        return Evaluator.NULL;
+    }
+
     private static Error NewError(string format, params object[] args) {
         return new Error() {Message = string.Format(format, args)};
     }
-
 }

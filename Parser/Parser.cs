@@ -12,7 +12,8 @@ public enum Precedence
     SUM,           // +
     PRODUCT,       // *
     PREFIX,        // -X or !X
-    CALL           // myFunction(X)
+    CALL,          // myFunction(X)
+    INDEX          // list[X]
 }
 
 public class Parser
@@ -25,7 +26,8 @@ public class Parser
     Dictionary<TokenType, Precedence> precedences = new Dictionary<TokenType, Precedence>() {
         {TokenType.EQ, Precedence.EQUALS}, {TokenType.NOT_EQ, Precedence.EQUALS}, {TokenType.LT, Precedence.LESSGREATER},
         {TokenType.GT, Precedence.LESSGREATER}, {TokenType.PLUS, Precedence.SUM}, {TokenType.MINUS, Precedence.SUM},
-        {TokenType.SLASH, Precedence.PRODUCT}, {TokenType.ASTERISK, Precedence.PRODUCT}, {TokenType.LPAREN, Precedence.CALL}
+        {TokenType.SLASH, Precedence.PRODUCT}, {TokenType.ASTERISK, Precedence.PRODUCT}, {TokenType.LPAREN, Precedence.CALL},
+        {TokenType.LBRACKET, Precedence.INDEX}
     };
 
     public List<string> Errors;
@@ -45,6 +47,7 @@ public class Parser
         RegisterPrefix(TokenType.IF, ParseIfExpression);
         RegisterPrefix(TokenType.FUNCTION, ParseFunctionLiteral);
         RegisterPrefix(TokenType.STRING, ParseStringLiteral);
+        RegisterPrefix(TokenType.LBRACKET, ParseArrayLiteral);
 
         infixParseFns = new Dictionary<TokenType, InfixParseFn>();
         RegisterInfix(TokenType.EQ, ParseInfixExpression);
@@ -56,6 +59,7 @@ public class Parser
         RegisterInfix(TokenType.SLASH, ParseInfixExpression);
         RegisterInfix(TokenType.ASTERISK, ParseInfixExpression);
         RegisterInfix(TokenType.LPAREN, ParseCallExpression);
+        RegisterInfix(TokenType.LBRACKET, ParseIndexExpression);
         NextToken();
         NextToken();
     }
@@ -275,36 +279,41 @@ public class Parser
     private Expression ParseCallExpression(Expression function)
     {
         CallExpression exp = new CallExpression() {TheToken = curToken, Function = function};
-        exp.Arguments = ParseCallArugments();
+        exp.Arguments = ParseExpressionList(TokenType.RPAREN);
         return exp;
     }
 
-    private List<Expression>? ParseCallArugments()
-    {
-        List<Expression> args = new List<Expression>();
+    private Expression ParseStringLiteral() => new StringLiteral() { TheToken = curToken, Value = curToken.Literal };
 
-        if (PeekTokenIs(TokenType.RPAREN)) {
+    private Expression ParseArrayLiteral() => new ArrayLiteral() { TheToken = curToken, Elements = ParseExpressionList(TokenType.RBRACKET)};
+    private List<Expression>? ParseExpressionList(TokenType end) {
+        List<Expression> list = new List<Expression>();
+        if (PeekTokenIs(end)) {
             NextToken();
-            return args;
+            return list;
         }
-
         NextToken();
-        args.Add(ParseExpression(Precedence.LOWEST));
-
+        list.Add(ParseExpression(Precedence.LOWEST));
         while (PeekTokenIs(TokenType.COMMA)) {
             NextToken();
             NextToken();
-            args.Add(ParseExpression(Precedence.LOWEST));
+            list.Add(ParseExpression(Precedence.LOWEST));
         }
 
-        if (!ExpectPeek(TokenType.RPAREN))
+        if(!ExpectPeek(end))
             return null;
 
-        return args;
-
+        return list;
     }
 
-    private Expression ParseStringLiteral() => new StringLiteral() { TheToken = curToken, Value = curToken.Literal };
+    private Expression? ParseIndexExpression(Expression left) {
+        var exp = new IndexExpression() { TheToken = curToken, Left = left};
+        NextToken();
+        exp.Index = ParseExpression(Precedence.LOWEST);
+        if (!ExpectPeek(TokenType.RBRACKET))
+            return null;
+        return exp;
+    }
 
     private bool CurTokenIs(TokenType t) => curToken.Type == t;
     private bool PeekTokenIs(TokenType t) => peekToken.Type == t;

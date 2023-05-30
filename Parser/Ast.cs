@@ -3,7 +3,7 @@ namespace ast;
 
 public interface Node {
     public string TokenLiteral();
-    public string String();
+    public string ToString();
 }
 
 public interface Statement : Node {
@@ -22,10 +22,10 @@ public struct AstProgram : Node {
         else
             return "";
     }
-    public string String() {
+    public override string ToString() {
         string temp = "";
         foreach (Statement statement in Statements) {
-            temp += $"{statement.String()}\n";
+            temp += $"{statement}\n";
         }
         return temp;
     }
@@ -38,7 +38,7 @@ public struct LetStatement : Statement {
     public void StatementNode() {}
     public string TokenLiteral() => TheToken.Literal;
 
-    public string String() => $"{TheToken.Literal} {Name.String()} = {(Value != null ? Value.String() : "")};";
+    public override string ToString() => $"{TheToken.Literal} {Name} = {(Value != null ? Value.ToString() : "")};";
 }
 
 public struct ReturnStatement : Statement {
@@ -46,7 +46,7 @@ public struct ReturnStatement : Statement {
     public Expression ReturnValue;
     public void StatementNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => $"{TheToken.Literal} {ReturnValue.String()} = {(ReturnValue != null ? ReturnValue.String() : "")};";
+    public override string ToString() => $"{TheToken.Literal} {ReturnValue} = {(ReturnValue != null ? ReturnValue.ToString() : "")};";
 }
 
 public struct ExpressionStatement : Statement {
@@ -54,7 +54,7 @@ public struct ExpressionStatement : Statement {
     public Expression TheExpression;
     public void StatementNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => TheExpression != null ? TheExpression.String() : "";
+    public override string ToString() => TheExpression != null ? TheExpression.ToString() : "";
 }
 
 public struct Identifier : Expression {
@@ -62,7 +62,7 @@ public struct Identifier : Expression {
     public string Value;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => Value;
+    public override string ToString() => Value;
 }
 
 public struct IntergerLiteral : Expression {
@@ -70,7 +70,7 @@ public struct IntergerLiteral : Expression {
     public long Value;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => TheToken.Literal;
+    public override string ToString() => TheToken.Literal;
 }
 
 public struct PrefixExpression : Expression {
@@ -79,7 +79,7 @@ public struct PrefixExpression : Expression {
     public Expression Right;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => $"({Operator}{Right.String()})";
+    public override string ToString() => $"({Operator}{Right})";
 }
 
 public struct InfixExpression : Expression {
@@ -89,7 +89,7 @@ public struct InfixExpression : Expression {
     public Expression Right;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => $"({Left.String()} {Operator} {Right.String()})";
+    public override string ToString() => $"({Left} {Operator} {Right})";
 }
 
 public struct BooleanExpression : Expression {
@@ -97,7 +97,7 @@ public struct BooleanExpression : Expression {
     public bool Value;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => TheToken.Literal;
+    public override string ToString() => TheToken.Literal;
 }
 
 public struct IfExpression : Expression {
@@ -107,12 +107,12 @@ public struct IfExpression : Expression {
     public BlockStatement? Alternative;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() {
+    public override string ToString() {
         string tmp = "if";
-        tmp += $" {Condition.String()}";
-        tmp += $" {Consequence.String()}";
+        tmp += $" {Condition}";
+        tmp += $" {Consequence}";
         if (Alternative != null)
-            tmp += $" else {Alternative?.String()}";
+            tmp += $" else {Alternative}";
         return tmp;
     }
 }
@@ -122,10 +122,10 @@ public struct BlockStatement : Statement{
     public List<Statement> Statements;
     public void StatementNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() {
+    public override string ToString() {
         string tmp = "";
         foreach (Statement statement in Statements)
-            tmp += statement.String();
+            tmp += statement.ToString();
         return tmp;
     }
 }
@@ -136,11 +136,11 @@ public struct FunctionLiteral : Expression {
     public BlockStatement Body;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() {
+    public override string ToString() {
         string[] p = new string[Parameters.Count];
         for (int i = 0; i < Parameters.Count; i++)
-            p[i] = Parameters[i].String();
-        return $"{TokenLiteral()} ({string.Join(", ", p)}) {Body.String()}";
+            p[i] = Parameters[i].ToString();
+        return $"{TokenLiteral()} ({string.Join(", ", p)}) {Body}";
     }
 }
 
@@ -150,11 +150,11 @@ public struct CallExpression : Expression{
     public List<Expression> Arguments;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() {
+    public override string ToString() {
         string[] args = new string[Arguments.Count];
         for (int i = 0; i < Arguments.Count; i++)
-            args[i] = Arguments[i].String();
-        return $"{Function.String()}({string.Join(", ", args)})";
+            args[i] = Arguments[i].ToString();
+        return $"{Function}({string.Join(", ", args)})";
     }
 }
 
@@ -163,5 +163,28 @@ public struct StringLiteral : Expression {
     public string Value;
     public void ExpressionNode() {}
     public string TokenLiteral() => TheToken.Literal;
-    public string String() => TheToken.Literal;
+    public override string ToString() => TheToken.Literal;
+}
+
+public struct ArrayLiteral : Expression {
+    public Token TheToken;
+    public List<Expression> Elements;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() {
+        string[] elements = new string[Elements.Count];
+        for (int i = 0; i < Elements.Count; i++)
+            elements[i] = Elements[i].ToString();
+
+        return $"[{string.Join(", ", elements)}]";
+    }
+}
+
+public struct IndexExpression : Expression {
+    public Token TheToken;
+    public Expression Left;
+    public Expression Index;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() => $"({Left}[{Index}])";
 }

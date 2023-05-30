@@ -14,7 +14,11 @@
 
 ## Example Code
 
+### example.bigl
+
 ``` bigl
+include("functions")
+
 // Declare variables
 let x = 20;
 let y = 10;
@@ -32,9 +36,20 @@ let adder = fn(x){
 let addTwo = adder(2);
 println(addTwo(3));
 
-// The function types do not matter
+// This function would als work with strings
 let hello = adder("Hello, ");
 println(hello("World!"));
+
+// Read input from a user
+let name = read("Please enter your name: ")
+println("Hello, " + name + "!");
+
+// Convert string to int
+let a = [1, 2, 3, 4];
+let b = push(a, 5);
+println(a);
+println(b);
+println(map(b, fn (x) { x * 2 }));
 ```
 
 ## Include Example
@@ -42,7 +57,7 @@ println(hello("World!"));
 ### main.bigl
 
 ``` bigl
-include("getage") // reference could also be getage.bigl
+include("functions")
 
 // A quick program with include
 let name = read("Please enter your name: ")
@@ -50,7 +65,7 @@ let age = getAge();
 println("Name: " + name + ", Age: " + toStr(age));
 ```
 
-### getage.bigl
+### functions.bigl
 
 ``` bigl
 let getAge = fn() {
@@ -59,6 +74,17 @@ let getAge = fn() {
         return toInt(age);
     } else { println("Please enter a digit!"); return getAge(); }
 }
+
+let map = fn(arr, f) {
+    let iter = fn(arr, accumulated) {
+        if (len(arr) == 0) {
+            accumulated;
+        } else {
+            iter(rest(arr), push(accumulated, f(first(arr))));
+        }
+    };
+    iter(arr, []);
+};
 
 let main = fn() {
     println("This is not call in the function")
