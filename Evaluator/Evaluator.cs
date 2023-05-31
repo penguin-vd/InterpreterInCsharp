@@ -9,6 +9,7 @@ public static class Evaluator
     public static readonly BooleanObj TRUE = new BooleanObj() {Value = true};
     public static readonly BooleanObj FALSE = new BooleanObj() {Value = false};
     public static readonly Null NULL = new Null();
+    public static readonly BreakObj BREAK = new BreakObj();
     public static Dictionary<string, IObject> Builtins = new() {
         {"len", new BuiltinObj() { Function = BuiltinFunctions.GetLength } },
         {"println", new BuiltinObj() { Function = BuiltinFunctions.PrintLine } },
@@ -107,8 +108,13 @@ public static class Evaluator
             case HashLiteral hashLiteral:
                 return EvalHashLiteral(hashLiteral, env);
             case ForExpression forExpression:
-                EvalForExpression(forExpression, env);
-                break;
+                var forRes = EvalForExpression(forExpression, env);
+                return forRes;
+            case WhileExpression whileExpression:
+                var whileRes = EvalWhileExpression(whileExpression, env);
+                return whileRes;
+            case BreakStatement breakStatement:
+                return BREAK;
         }
         return NULL;
     }
@@ -131,7 +137,7 @@ public static class Evaluator
         IObject result = NULL;
         foreach (Statement statement in block.Statements) {
             result = Eval(statement, env);
-            if (result.Type() == ObjectType.RETURN_VALUE || result.Type() == ObjectType.ERROR)
+            if (result.Type() == ObjectType.RETURN_VALUE || result.Type() == ObjectType.ERROR || result.Type() == ObjectType.BREAK)
                 return result;
 
         }
@@ -311,17 +317,36 @@ public static class Evaluator
         return hash.Pairs[(index as IHashable).HashKey()].Value;
     }
 
-    private static void EvalForExpression(ForExpression expression, Env env) {
+    private static IObject EvalForExpression(ForExpression expression, Env env) {
         var array = Eval(expression.Iterative.Array, env);
         switch (array) {
             case ArrayObj arrayObj:
+                var extEnv = Env.NewEnclosedEnviroment(env);
                 foreach(var obj in arrayObj.Elements) {
-                    env.Set(expression.Iterative.Index.Value, obj);
-                    Eval(expression.Body, env);
+                    extEnv.Set(expression.Iterative.Index.Value, obj);
+                    var res = Eval(expression.Body, extEnv);
+                    if (res.Type() == ObjectType.BREAK)
+                        break;
                 }
                 break;
+            default:
+                return NewError("for does not support type {0}", array.Type());
         }
-        env.Remove(expression.Iterative.Index.Value);
+        return NULL;
+    }
+
+    private static IObject EvalWhileExpression(WhileExpression expression, Env env) {
+        var condition = Eval(expression.Condition, env);
+        if (condition.Type() != ObjectType.BOOLEAN)
+            return NewError("wrong use of 'while', want BOOLEAN got {0}", condition.Type());
+        var extEnv = Env.NewEnclosedEnviroment(env);
+        while (((BooleanObj)condition).Value) {
+            var res = Eval(expression.Body, extEnv);
+            if (res.Type() == ObjectType.BREAK)
+                break;
+            condition = Eval(expression.Condition, extEnv);
+        }
+        return NULL;
     }
 
     private static IObject EvalHashLiteral(HashLiteral node, Env env) {

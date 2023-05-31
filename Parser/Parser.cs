@@ -50,6 +50,7 @@ public class Parser
         RegisterPrefix(TokenType.LBRACKET, ParseArrayLiteral);
         RegisterPrefix(TokenType.LBRACE, ParseHashLiteral);
         RegisterPrefix(TokenType.FOR, ParseForExpression);
+        RegisterPrefix(TokenType.WHILE, ParseWhileExpression);
 
         infixParseFns = new Dictionary<TokenType, InfixParseFn>();
         RegisterInfix(TokenType.EQ, ParseInfixExpression);
@@ -71,8 +72,7 @@ public class Parser
         peekToken = lexer.NextToken();
     }
 
-    public AstProgram ParseProgram()
-    {
+    public AstProgram ParseProgram() {
         AstProgram program = new AstProgram();
         program.Statements = new List<Statement>();
         while (curToken.Type != TokenType.EOF) {
@@ -84,8 +84,7 @@ public class Parser
         return program;
     }
 
-    private Statement? ParseStatement()
-    {
+    private Statement? ParseStatement() {
         switch (curToken.Type) {
             case TokenType.LET:
                 return ParseLetStatement();
@@ -93,13 +92,14 @@ public class Parser
                 return ParseReturnStatement();
             case TokenType.IDENT:
                 return ParseAssignStatement();
+            case TokenType.BREAK:
+                return ParseBreakStatement();
             default:
                 return ParseExpressionStatement();
         }
     }
 
-    private LetStatement? ParseLetStatement()
-    {
+    private LetStatement? ParseLetStatement() {
         LetStatement statement = new LetStatement() {TheToken = curToken};
         if (!ExpectPeek(TokenType.IDENT))
             return null;
@@ -119,8 +119,7 @@ public class Parser
         return statement;
     }
 
-    private ReturnStatement? ParseReturnStatement()
-    {
+    private ReturnStatement? ParseReturnStatement() {
         ReturnStatement statement = new ReturnStatement() {TheToken = curToken};
 
         NextToken();
@@ -130,6 +129,14 @@ public class Parser
         if (PeekTokenIs(TokenType.SEMICOLON))
             NextToken();
 
+        return statement;
+    }
+
+    private BreakStatement ParseBreakStatement() {
+        BreakStatement statement = new BreakStatement() {TheToken = curToken};
+        NextToken();
+        if (PeekTokenIs(TokenType.SEMICOLON))
+            NextToken();
         return statement;
     }
 
@@ -310,6 +317,22 @@ public class Parser
             return null;
 
         expression.Iterative = (ForIterative)iterative;
+        if (!ExpectPeek(TokenType.LBRACE))
+            return null;
+
+        expression.Body = ParseBlockStatement();
+        return expression;
+    }
+
+    private Expression? ParseWhileExpression() {
+        WhileExpression expression = new WhileExpression() { TheToken = curToken };
+        if (!ExpectPeek(TokenType.LPAREN))
+            return null;
+
+        var booleanExp = ParseExpression(Precedence.LOWEST);
+        if (booleanExp == null)
+            return null;
+        expression.Condition = booleanExp;
         if (!ExpectPeek(TokenType.LBRACE))
             return null;
 

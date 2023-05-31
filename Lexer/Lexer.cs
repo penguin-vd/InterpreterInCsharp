@@ -16,6 +16,8 @@ public class Lexer
         {"return", TokenType.RETURN},
         {"for", TokenType.FOR},
         {"in", TokenType.IN},
+        {"while", TokenType.WHILE},
+        {"break", TokenType.BREAK}
     };
 
     public Lexer(string input) {

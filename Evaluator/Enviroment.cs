@@ -19,6 +19,10 @@ public class Env {
     }
 
     public IObject Set(string name, IObject val) {
+        if (Outer?.GetObject(name) != null) {
+            Outer.Set(name, val);
+            return val;
+        }
         Store[name] = val;
         return val;
     }

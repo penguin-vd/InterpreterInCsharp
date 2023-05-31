@@ -16,7 +16,7 @@ public enum ObjectType {
     INCLUDE,
     ARRAY,
     HASH,
-    FOR
+    BREAK,
 }
 
 public interface IObject {
@@ -57,6 +57,11 @@ public struct ReturnValue : IObject {
     public IObject Value;
     public ObjectType Type() => ObjectType.RETURN_VALUE;
     public string Inspect() => $"{Value.Inspect()}";
+}
+
+public struct BreakObj : IObject {
+    public ObjectType Type() => ObjectType.BREAK;
+    public string Inspect() => $"break";
 }
 
 public struct Error : IObject {

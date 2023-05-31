@@ -48,3 +48,22 @@ for(i in range(1, 100)) {
     sum = sum + i;
 }
 println(sum);
+
+// Nested For loops
+let adj = ["red", "big", "tasty"]
+let fruits = ["apple", "banana", "cherry"]
+
+for (x in adj) {
+    for (y in fruits) {
+        println(x + " " + y);
+    }
+}
+
+// While loops
+while (true) {
+    let input = read("Enter 'exit' to exit: ")
+    if (input == "exit") {
+        break;
+    }
+    println("that is not exit!!");
+}

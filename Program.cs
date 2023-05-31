@@ -37,4 +37,30 @@ public static class Program
                 Console.WriteLine($"File {file} was not found.");
             }
     }
+
+
+    // Testing enviroment to test new features
+    private static void Test(string input) {
+        Console.WriteLine($"({input}): ");
+        Lexer lexer = new Lexer(input);
+
+        // Test lexer
+        // Token tok = lexer.NextToken();
+        // while (tok.Type != TokenType.EOF) {
+        //     Console.WriteLine($"{tok.Type}: {tok.Literal}");
+        //     tok = lexer.NextToken();
+        // }
+        Parser parser = new Parser(lexer);
+
+        // Test parser
+        // foreach(var statement in parser.ParseProgram().Statements) {
+        //     Console.WriteLine(statement);
+        // }
+
+        // Test evaluator
+        Env env = new Env();
+        env.Set("_name", new StringObj() { Value = "_main" });
+        var evalutated = Evaluator.Eval(parser.ParseProgram(), env);
+        Console.WriteLine(evalutated.Inspect());
+    }
 }
