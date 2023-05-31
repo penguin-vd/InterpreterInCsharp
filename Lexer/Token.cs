@@ -45,6 +45,8 @@ public enum TokenType {
     IF,
     ELSE,
     RETURN,
+    FOR,
+    IN
 }
 
 public struct Token {

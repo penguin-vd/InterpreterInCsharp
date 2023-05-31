@@ -13,6 +13,7 @@
 - Include
 - Arrays
 - Hashes
+- For loop
 
 ## Example Code
 
@@ -62,6 +63,13 @@ let player = {"name": name, "health": 20, "take_damage": fn (x) {player["health"
 println("Name: " + player["name"] + " Health: " + toStr(player["health"]));
 player["take_damage"](2);
 println("Name: " + player["name"] + " Health: " + toStr(player["health"]));
+
+// For loops
+let sum = 0;
+for(i in range(1, 100)) {
+    sum = sum + i;
+}
+println(sum);
 ```
 
 ## Include Example
@@ -109,4 +117,4 @@ if (_name == "_main") {
 
 ## Future Features
 
-- Loops
+- While loop

@@ -94,7 +94,7 @@ public static class Evaluator
                 var elements = EvalExpressions(arrayLiteral.Elements, env);
                 if (elements.Count == 1 && IsError(elements[0]))
                     return elements[0];
-                return new ArrayObj() {Elements = elements};
+                return new ArrayObj() { Elements = elements };
             case IndexExpression indexExpression:
                 var left = Eval(indexExpression.Left, env);
                 if (IsError(left))
@@ -106,6 +106,9 @@ public static class Evaluator
                 return EvalIndexExpression(left, index);
             case HashLiteral hashLiteral:
                 return EvalHashLiteral(hashLiteral, env);
+            case ForExpression forExpression:
+                EvalForExpression(forExpression, env);
+                break;
         }
         return NULL;
     }
@@ -306,6 +309,19 @@ public static class Evaluator
             return NULL;
 
         return hash.Pairs[(index as IHashable).HashKey()].Value;
+    }
+
+    private static void EvalForExpression(ForExpression expression, Env env) {
+        var array = Eval(expression.Iterative.Array, env);
+        switch (array) {
+            case ArrayObj arrayObj:
+                foreach(var obj in arrayObj.Elements) {
+                    env.Set(expression.Iterative.Index.Value, obj);
+                    Eval(expression.Body, env);
+                }
+                break;
+        }
+        env.Remove(expression.Iterative.Index.Value);
     }
 
     private static IObject EvalHashLiteral(HashLiteral node, Env env) {

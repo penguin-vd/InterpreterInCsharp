@@ -14,6 +14,8 @@ public class Lexer
         {"if", TokenType.IF},
         {"else", TokenType.ELSE},
         {"return", TokenType.RETURN},
+        {"for", TokenType.FOR},
+        {"in", TokenType.IN},
     };
 
     public Lexer(string input) {

@@ -54,6 +54,16 @@ public class Env {
         }
         return Evaluator.NULL;
     }
+
+    public void Remove(string key) {
+        if (!Store.ContainsKey(key)) {
+            if (Outer != null) {
+                Outer.Remove(key);
+                return;
+            } else return;
+        }
+        Store.Remove(key);
+    }
     public static Env NewEnclosedEnviroment(Env env) {
         return new Env() {Outer = env};
     }

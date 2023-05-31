@@ -49,6 +49,7 @@ public class Parser
         RegisterPrefix(TokenType.STRING, ParseStringLiteral);
         RegisterPrefix(TokenType.LBRACKET, ParseArrayLiteral);
         RegisterPrefix(TokenType.LBRACE, ParseHashLiteral);
+        RegisterPrefix(TokenType.FOR, ParseForExpression);
 
         infixParseFns = new Dictionary<TokenType, InfixParseFn>();
         RegisterInfix(TokenType.EQ, ParseInfixExpression);
@@ -285,7 +286,7 @@ public class Parser
             return identifiers;
         }
         NextToken();
-        Identifier ident = new Identifier{TheToken = curToken, Value = curToken.Literal};
+        Identifier ident = new Identifier() {TheToken = curToken, Value = curToken.Literal};
         identifiers.Add(ident);
 
         while(PeekTokenIs(TokenType.COMMA)) {
@@ -297,6 +298,39 @@ public class Parser
         if (!ExpectPeek(TokenType.RPAREN))
             return null;
         return identifiers;
+    }
+
+    private Expression? ParseForExpression() {
+        ForExpression expression = new ForExpression() { TheToken = curToken };
+        if (!ExpectPeek(TokenType.LPAREN))
+            return null;
+
+        var iterative = ParseIterativeExpression();
+        if (iterative == null)
+            return null;
+
+        expression.Iterative = (ForIterative)iterative;
+        if (!ExpectPeek(TokenType.LBRACE))
+            return null;
+
+        expression.Body = ParseBlockStatement();
+        return expression;
+    }
+
+    private ForIterative? ParseIterativeExpression() {
+        if (!ExpectPeek(TokenType.IDENT))
+            return null;
+        Identifier ident = new Identifier() {TheToken = curToken, Value = curToken.Literal};
+        if (!ExpectPeek(TokenType.IN))
+            return null;
+        NextToken();
+        Expression? array = null;
+        array = ParseExpression(Precedence.LOWEST);
+        if (array == null)
+            return null;
+
+        NextToken();
+        return new ForIterative() {Index = ident, Array = array};
     }
 
     private Expression ParseCallExpression(Expression function)

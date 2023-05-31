@@ -15,7 +15,8 @@ public enum ObjectType {
     EXIT,
     INCLUDE,
     ARRAY,
-    HASH
+    HASH,
+    FOR
 }
 
 public interface IObject {

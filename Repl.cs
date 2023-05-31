@@ -11,6 +11,7 @@ static public class Repl
     public static void Start()
     {
         Env env = new Env();
+        env.Set("_name", new StringObj() { Value = "_main" });
         while(true) {
             Console.Write(PROMPT);
             string? line = Console.ReadLine();

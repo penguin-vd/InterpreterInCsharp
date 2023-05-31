@@ -126,7 +126,25 @@ public struct IfExpression : Expression {
     }
 }
 
-public struct BlockStatement : Statement{
+public struct ForExpression : Expression {
+    public Token TheToken;
+    public ForIterative Iterative;
+    public BlockStatement Body;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() => $"for({Iterative}) {'{'} {Body} {'}'}";
+}
+
+public struct ForIterative : Expression {
+    public Token TheToken;
+    public Identifier Index;
+    public Expression Array;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() => $"{Index} in {Array}";
+}
+
+public struct BlockStatement : Statement {
     public Token TheToken;
     public List<Statement> Statements;
     public void StatementNode() {}
@@ -212,5 +230,4 @@ public struct HashLiteral : Expression {
         }
         return $"{'{'}{string.Join(", ", pairs)}{'}'}";
     }
-
 }
