@@ -67,6 +67,14 @@ public static class Evaluator
                     return NewError("{0} is a builtin function", letStatement.Name.Value);
                 env.Set(letStatement.Name.Value, letVal);
                 break;
+            case AssignStatement assignStatement:
+                var assignVal = Eval(assignStatement.Value, env);
+                if(IsError(assignVal))
+                    return assignVal;
+                var assignRes = EvalAssignStatement(assignStatement, assignVal, env);
+                if (IsError(assignRes))
+                    return assignRes;
+                break;
             case Identifier identifier:
                 return EvalIdentifier(identifier, env);
             case FunctionLiteral functionLiteral:
@@ -77,7 +85,6 @@ public static class Evaluator
                 var function = Eval(callExpression.Function, env);
                 if (IsError(function))
                     return function;
-
                 var callArgs = EvalExpressions(callExpression.Arguments, env);
                 if (callArgs.Count == 1 && IsError(callArgs[0]))
                     return callArgs[0];
@@ -131,6 +138,27 @@ public static class Evaluator
         if (input)
             return TRUE;
         else return FALSE;
+    }
+
+    private static IObject EvalAssignStatement(AssignStatement statement, IObject value, Env env) {
+        switch (statement.Name) {
+            case Identifier identifier:
+                if (env.GetObject(identifier.Value) == null)
+                    return NewError("variable with name {0} has not been found", identifier.Value);
+                env.Set(identifier.Value, value);
+                break;
+            case IndexExpression indexExpression:
+                var left = Eval(indexExpression.Left, env);
+                if (IsError(left))
+                    return left;
+
+                var index = Eval(indexExpression.Index, env);
+                if (IsError(index))
+                    return index;
+                env.Set(indexExpression.Left.TokenLiteral(), index, value);
+                break;
+        }
+        return NULL;
     }
 
     private static IObject EvalPrefixExpression(string op, IObject obj) {

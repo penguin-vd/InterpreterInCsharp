@@ -90,6 +90,8 @@ public class Parser
                 return ParseLetStatement();
             case TokenType.RETURN:
                 return ParseReturnStatement();
+            case TokenType.IDENT:
+                return ParseAssignStatement();
             default:
                 return ParseExpressionStatement();
         }
@@ -130,6 +132,26 @@ public class Parser
         return statement;
     }
 
+    private Statement? ParseAssignStatement() {
+        AssignStatement statement = new AssignStatement() { TheToken = curToken };
+
+        if (PeekTokenIs(TokenType.LBRACKET)) {
+            statement.Name = ParseExpression(Precedence.LOWEST);
+            if (!PeekTokenIs(TokenType.ASSIGN) && !PeekTokenIs(TokenType.PLUS_EQ) && !PeekTokenIs(TokenType.MIN_EQ))
+                return new ExpressionStatement() {TheToken = curToken, TheExpression = statement.Name };
+        }
+        else statement.Name = new Identifier() {TheToken = curToken, Value = curToken.Literal};
+
+        if (!PeekTokenIs(TokenType.ASSIGN) && !PeekTokenIs(TokenType.PLUS_EQ) && !PeekTokenIs(TokenType.MIN_EQ))
+            return ParseExpressionStatement();
+        NextToken();
+        statement.Operator = curToken.Literal;
+        NextToken();
+        statement.Value = ParseExpression(Precedence.LOWEST);
+        if (PeekTokenIs(TokenType.SEMICOLON))
+            NextToken();
+        return statement;
+    }
     private ExpressionStatement? ParseExpressionStatement()
     {
         ExpressionStatement statement = new ExpressionStatement() {TheToken = curToken};
@@ -281,6 +303,8 @@ public class Parser
     {
         CallExpression exp = new CallExpression() {TheToken = curToken, Function = function};
         exp.Arguments = ParseExpressionList(TokenType.RPAREN);
+        if (PeekTokenIs(TokenType.SEMICOLON))
+            NextToken();
         return exp;
     }
 

@@ -56,6 +56,12 @@ println(map(b, fn (x) { x * 2 }));
 // Hashes
 let person = {"name": name, "age": 69};
 println(person);
+
+// Assign features
+let player = {"name": name, "health": 20, "take_damage": fn (x) {player["health"] = player["health"] - x}};
+println("Name: " + player["name"] + " Health: " + toStr(player["health"]));
+player["take_damage"](2);
+println("Name: " + player["name"] + " Health: " + toStr(player["health"]));
 ```
 
 ## Include Example

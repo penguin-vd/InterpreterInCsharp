@@ -37,8 +37,17 @@ public struct LetStatement : Statement {
     public Expression Value;
     public void StatementNode() {}
     public string TokenLiteral() => TheToken.Literal;
-
     public override string ToString() => $"{TheToken.Literal} {Name} = {(Value != null ? Value.ToString() : "")};";
+}
+
+public struct AssignStatement : Statement {
+    public Token TheToken;
+    public Expression Name;
+    public string Operator;
+    public Expression Value;
+    public void StatementNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() =>  $"{TheToken.Literal} {Name} {Operator} {(Value != null ? Value.ToString() : "")};";
 }
 
 public struct ReturnStatement : Statement {

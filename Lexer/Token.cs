@@ -13,6 +13,9 @@ public enum TokenType {
     ASSIGN,
     PLUS,
     MINUS,
+    PLUS_EQ,
+    MIN_EQ,
+
     BANG,
     ASTERISK,
     SLASH,

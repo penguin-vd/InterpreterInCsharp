@@ -53,9 +53,21 @@ public class Lexer
                 tok = new Token(TokenType.COMMA, ch.ToString());
                 break;
             case '+':
+                if (PeekChar() == '=') {
+                    char oldCh = ch;
+                    ReadChar();
+                    tok = new Token(TokenType.PLUS_EQ, $"{oldCh}{ch}");
+                    break;
+                }
                 tok = new Token(TokenType.PLUS, ch.ToString());
                 break;
             case '-':
+                if (PeekChar() == '=') {
+                    char oldCh = ch;
+                    ReadChar();
+                    tok = new Token(TokenType.MIN_EQ, $"{oldCh}{ch}");
+                    break;
+                }
                 tok = new Token(TokenType.MINUS, ch.ToString());
                 break;
             case '!':

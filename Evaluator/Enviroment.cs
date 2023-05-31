@@ -22,6 +22,27 @@ public class Env {
         Store[name] = val;
         return val;
     }
+    public IObject Set(string key, IObject index, IObject assignVal) {
+        switch (GetObject(key)) {
+            case Hash hash:
+                if (index is not IHashable)
+                    return Evaluator.NULL;
+                hash.Pairs[(index as IHashable).HashKey()] = new HashPair() { Key = index, Value = assignVal};
+                break;
+            case ArrayObj array:
+                switch (index) {
+                    case Integer integer:
+                        if (0 < integer.Value && integer.Value < array.Elements.Count) {
+                            array.Elements[(int)integer.Value] = assignVal;
+                            break;
+                        } else return Evaluator.NULL;
+                    default:
+                        return Evaluator.NULL;
+                }
+                break;
+        }
+        return assignVal;
+    }
 
     public IObject AddEnv(Env env) {
         foreach (var kvp in env.Store) {
