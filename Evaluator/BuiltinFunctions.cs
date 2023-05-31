@@ -198,6 +198,23 @@ public static class BuiltinFunctions {
         return Evaluator.NULL;
     }
 
+    public static IObject Range(params IObject[] args) { 
+        if (args.Length != 2)
+            return NewError("wrong number of arguments. got={0}, want=2", args.Length);
+        if (args[0].Type() != ObjectType.INTEGER || args[1].Type() != ObjectType.INTEGER)
+            return NewError("arguments to 'range' must be INTEGER, got {0}, {1}", args[0].Type(), args[1].Type());
+        
+        long low = ((Integer)args[0]).Value;
+        long high = ((Integer)args[1]).Value;
+        
+        ArrayObj array = new ArrayObj() { Elements = new() };
+        foreach (int i in Enumerable.Range((int)low, (int)(high - low))) {
+            array.Elements.Add(new Integer() { Value = i });
+        }
+
+        return array;
+    }
+
     private static Error NewError(string format, params object[] args) {
         return new Error() {Message = string.Format(format, args)};
     }
