@@ -84,11 +84,22 @@ public class Lexer
                 tok = new Token(TokenType.BANG, ch.ToString());
                 break;
             case '*':
+                if (PeekChar() == '=') {
+                    char oldCh = ch;
+                    ReadChar();
+                    tok = new Token(TokenType.TIMES_EQ, $"{oldCh}{ch}");
+                    break;
+                }
                 tok = new Token(TokenType.ASTERISK, ch.ToString());
                 break;
             case '/':
                 if (PeekChar() == '/') {
                     tok = new Token(TokenType.COMMENT, SkipLine());
+                    break;
+                } else if (PeekChar() == '=') {
+                    char oldCh = ch;
+                    ReadChar();
+                    tok = new Token(TokenType.DIVIDE_EQ, $"{oldCh}{ch}");
                     break;
                 }
                 tok = new Token(TokenType.SLASH, ch.ToString());

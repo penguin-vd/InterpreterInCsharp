@@ -15,6 +15,8 @@ public enum TokenType {
     MINUS,
     PLUS_EQ,
     MIN_EQ,
+    TIMES_EQ,
+    DIVIDE_EQ,
 
     BANG,
     ASTERISK,

@@ -145,12 +145,12 @@ public class Parser
 
         if (PeekTokenIs(TokenType.LBRACKET)) {
             statement.Name = ParseExpression(Precedence.LOWEST);
-            if (!PeekTokenIs(TokenType.ASSIGN) && !PeekTokenIs(TokenType.PLUS_EQ) && !PeekTokenIs(TokenType.MIN_EQ))
+            if (IsAssignOp())
                 return new ExpressionStatement() {TheToken = curToken, TheExpression = statement.Name };
         }
         else statement.Name = new Identifier() {TheToken = curToken, Value = curToken.Literal};
 
-        if (!PeekTokenIs(TokenType.ASSIGN) && !PeekTokenIs(TokenType.PLUS_EQ) && !PeekTokenIs(TokenType.MIN_EQ))
+        if (IsAssignOp())
             return ParseExpressionStatement();
         NextToken();
         statement.Operator = curToken.Literal;
@@ -160,6 +160,9 @@ public class Parser
             NextToken();
         return statement;
     }
+
+    private bool IsAssignOp() => !PeekTokenIs(TokenType.ASSIGN) && !PeekTokenIs(TokenType.PLUS_EQ) && !PeekTokenIs(TokenType.MIN_EQ)
+                                && !PeekTokenIs(TokenType.TIMES_EQ) && !PeekTokenIs(TokenType.DIVIDE_EQ);
     private ExpressionStatement? ParseExpressionStatement()
     {
         ExpressionStatement statement = new ExpressionStatement() {TheToken = curToken};

@@ -18,6 +18,29 @@ public class Env {
         return Store[name];
     }
 
+    public IObject? GetHashObject(string name, IHashable index) {
+        if (!Store.Keys.Contains(name)) {
+            if (Outer != null) {
+                return Outer.GetHashObject(name, index);
+            } else return null;
+        }
+        var hash = (Hash)Store[name];
+        if (hash.Pairs.ContainsKey(index.HashKey()))
+            return hash.Pairs[index.HashKey()].Value;
+        else return null;
+    }
+
+    public IObject? GetArrayObject(string name, Integer index) {
+        if (!Store.Keys.Contains(name)) {
+            if (Outer != null) {
+                return Outer.GetArrayObject(name, index);
+            } else return null;
+        }
+        if (0 < index.Value && index.Value < ((ArrayObj)Store[name]).Elements.Count) {
+            return ((ArrayObj)Store[name]).Elements[(int)index.Value];
+        } else return null;
+    }
+
     public IObject Set(string name, IObject val) {
         if (Outer?.GetObject(name) != null) {
             Outer.Set(name, val);

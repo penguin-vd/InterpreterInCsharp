@@ -153,8 +153,12 @@ public static class Evaluator
     private static IObject EvalAssignStatement(AssignStatement statement, IObject value, Env env) {
         switch (statement.Name) {
             case Identifier identifier:
-                if (env.GetObject(identifier.Value) == null)
+                var obj = env.GetObject(identifier.Value);
+                if (obj == null)
                     return NewError("variable with name {0} has not been found", identifier.Value);
+                value = EvalAssignOperator(obj, value, statement.Operator);
+                if (IsError(value))
+                    return value;
                 env.Set(identifier.Value, value);
                 break;
             case IndexExpression indexExpression:
@@ -165,10 +169,46 @@ public static class Evaluator
                 var index = Eval(indexExpression.Index, env);
                 if (IsError(index))
                     return index;
+                IObject? res = null;
+                if (index is IHashable && left.Type() == ObjectType.HASH)
+                    res = env.GetHashObject(indexExpression.Left.TokenLiteral(), (IHashable)index);
+                if (index is Integer)
+                    res = env.GetArrayObject(indexExpression.Left.TokenLiteral(), (Integer)index);
+
+                if (res == null){
+                    env.Set(indexExpression.Left.TokenLiteral(), index, value);
+                    break;
+                }
+
+                value = EvalAssignOperator(res, value, statement.Operator);
+                if (IsError(value))
+                    return value;
                 env.Set(indexExpression.Left.TokenLiteral(), index, value);
                 break;
         }
         return NULL;
+    }
+
+    private static IObject EvalAssignOperator(IObject oldVal, IObject newVal, string op) {
+        switch (op) {
+            case "+=":
+                if (oldVal.Type() != ObjectType.INTEGER || newVal.Type() != ObjectType.INTEGER)
+                    return NewError("type mismatch: {0} {1} {2}", oldVal.Type(), op, newVal.Type());
+                return new Integer() { Value = ((Integer)oldVal).Value + ((Integer)newVal).Value };
+            case "-=":
+                if (oldVal.Type() != ObjectType.INTEGER || newVal.Type() != ObjectType.INTEGER)
+                    return NewError("type mismatch: {0} {1} {2}", oldVal.Type(), op, newVal.Type());
+                return new Integer() { Value = ((Integer)oldVal).Value - ((Integer)newVal).Value };
+            case "*=":
+                if (oldVal.Type() != ObjectType.INTEGER || newVal.Type() != ObjectType.INTEGER)
+                    return NewError("type mismatch: {0} {1} {2}", oldVal.Type(), op, newVal.Type());
+                return new Integer() { Value = ((Integer)oldVal).Value * ((Integer)newVal).Value };
+            case "=":
+                return newVal;
+            default:
+                return NewError("operator '{0}' not recognized", op);
+        }
+
     }
 
     private static IObject EvalPrefixExpression(string op, IObject obj) {

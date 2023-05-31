@@ -37,10 +37,12 @@ let person = {"name": name, "age": 69};
 println(person);
 
 // Assign features
-let player = {"name": name, "health": 20, "take_damage": fn (x) {player["health"] = player["health"] - x}};
-println("Name: " + player["name"] + " Health: " + toStr(player["health"]));
+let player = {"name": name, "health": 20, "take_damage": fn (x) {player["health"] -= x}, "take_big_damage": fn (x) { player["health"] -= x * 2;} };
+println("Name: " + player["name"] + ", Health: " + toStr(player["health"]));
 player["take_damage"](2);
-println("Name: " + player["name"] + " Health: " + toStr(player["health"]));
+println("Name: " + player["name"] + ", Health: " + toStr(player["health"]));
+player["take_big_damage"](2);
+println("Name: " + player["name"] + ", Health: " + toStr(player["health"]));
 
 // For loops
 let sum = 0;
