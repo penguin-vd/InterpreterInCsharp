@@ -14,6 +14,7 @@
 - Arrays
 - Hashes
 - For loop
+- While loop
 
 ## Example Code
 
@@ -70,6 +71,25 @@ for(i in range(1, 100)) {
     sum = sum + i;
 }
 println(sum);
+
+// Nested For loops
+let adj = ["red", "big", "tasty"]
+let fruits = ["apple", "banana", "cherry"]
+
+for (x in adj) {
+    for (y in fruits) {
+        println(x + " " + y);
+    }
+}
+
+// While loops
+while (true) {
+    let input = read("Enter 'exit' to exit: ")
+    if (input == "exit") {
+        break;
+    }
+    println("that is not exit!!");
+}
 ```
 
 ## Include Example
@@ -114,7 +134,3 @@ if (_name == "_main") {
     main();
 }
 ```
-
-## Future Features
-
-- While loop
