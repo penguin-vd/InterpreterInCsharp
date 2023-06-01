@@ -10,7 +10,7 @@ public static class Program
     {
         Console.Clear();
         if (args.Length == 0) {
-            Test("let x = 10.01; println(x * 10);");
+            StartRepl();
             return;
         }
         OpenFile(args[0]);
