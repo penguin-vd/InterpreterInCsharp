@@ -51,6 +51,8 @@ public static class BuiltinFunctions {
                 if (boolean.Value)
                     return new Integer() { Value = 1 };
                 return new Integer() { Value = 0 };
+            case Float fl:
+                return new Integer() { Value = (long)fl.Value };
             default:
                 return NewError("argument to `int` not supported, got {0}", args[0].Type());
         }
@@ -89,6 +91,8 @@ public static class BuiltinFunctions {
                 return new StringObj() { Value = integer.Inspect() };
             case BooleanObj boolean:
                 return new StringObj() { Value = boolean.Inspect() };
+            case Float fl:
+                return new StringObj() { Value = fl.Inspect() };
             default:
                 return NewError("argument to `int` not supported, got {0}", args[0].Type());
         }
