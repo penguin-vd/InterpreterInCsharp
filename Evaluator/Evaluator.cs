@@ -39,6 +39,8 @@ public static class Evaluator
                 return Eval(statement.TheExpression, env);
             case IntergerLiteral intergerLiteral:
                 return new Integer() {Value = intergerLiteral.Value};
+            case FloatLiteral floatLiteral:
+                return new Float() {Value = floatLiteral.Value};
             case BooleanExpression boolean:
                 return NativeBoolToBooleanObj(boolean.Value);
             case StringLiteral stringLiteral:
@@ -241,11 +243,12 @@ public static class Evaluator
     }
 
     private static IObject EvalInfixExpression(string op, IObject left, IObject right) {
+        if (left.Type() == ObjectType.FLOAT || left.Type() == ObjectType.INTEGER &&
+            right.Type() == ObjectType.INTEGER || right.Type() == ObjectType.FLOAT)
+            return EvalNumberInfixExpression(op, left, right);
+
         if (left.Type() != right.Type())
             return NewError("type mismatch: {0} {1} {2}", left.Type(), op, right.Type());
-
-        if (left.Type() == ObjectType.INTEGER && right.Type() == ObjectType.INTEGER)
-            return EvalIntegerInfixExpression(op, left, right);
 
         if (left.Type() == ObjectType.STRING && right.Type() == ObjectType.STRING)
             return EvalStringInfixExpression(op, left, right);
@@ -256,12 +259,26 @@ public static class Evaluator
             case "!=":
                 return NativeBoolToBooleanObj(left.Inspect() != right.Inspect());
         }
-        return NewError("unknown operator: {0} {1} {2}", left.Type(), op, right.Type());;
+        return NewError("unknown operator: {0} {1} {2}", left.Type(), op, right.Type());
     }
 
-    private static IObject EvalIntegerInfixExpression(string op, IObject left, IObject right) {
-        long leftVal = ((Integer)left).Value;
-        long rightVal = ((Integer)right).Value;
+    private static IObject EvalNumberInfixExpression(string op, IObject left, IObject right) {
+        switch ((left, right)) {
+            case (Float leftFl, Float rightFl):
+                return EvalFloatInfixExpression(op, leftFl, rightFl);
+            case (Float leftFl, Integer rightIn):
+                return EvalFloatInfixExpression(op, leftFl, new Float() { Value = rightIn.Value });
+            case (Integer leftIn, Float rightFl):
+                return EvalFloatInfixExpression(op, new Float() { Value = leftIn.Value }, rightFl);
+            case (Integer leftIn, Integer rightIn):
+                return EvalIntegerInfixExpression(op, leftIn, rightIn);
+        }
+        return NewError("unknown operator: {0} {1} {2}", left.Type(), op, right.Type());
+    }
+
+    private static IObject EvalIntegerInfixExpression(string op, Integer left, Integer right) {
+        long leftVal = left.Value;
+        long rightVal = right.Value;
         switch (op) {
             case "+":
                 return new Integer() { Value = leftVal + rightVal};
@@ -271,6 +288,31 @@ public static class Evaluator
                 return new Integer() { Value = leftVal * rightVal};
             case "/":
                 return new Integer() { Value = leftVal / rightVal};
+            case "<":
+                return NativeBoolToBooleanObj(leftVal < rightVal);
+            case ">":
+                return NativeBoolToBooleanObj(leftVal > rightVal);
+            case "==":
+                return NativeBoolToBooleanObj(leftVal == rightVal);
+            case "!=":
+                return NativeBoolToBooleanObj(leftVal != rightVal);
+            default:
+                return NewError("unknown operator: {0} {1} {2}", left.Type(), op, right.Type());
+        }
+    }
+
+    private static IObject EvalFloatInfixExpression(string op, Float left, Float right) {
+        double leftVal = left.Value;
+        double rightVal = right.Value;
+        switch (op) {
+            case "+":
+                return new Float() { Value = leftVal + rightVal};
+            case "-":
+                return new Float() { Value = leftVal - rightVal};
+            case "*":
+                return new Float() { Value = leftVal * rightVal};
+            case "/":
+                return new Float() { Value = leftVal / rightVal};
             case "<":
                 return NativeBoolToBooleanObj(leftVal < rightVal);
             case ">":

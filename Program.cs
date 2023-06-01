@@ -10,7 +10,7 @@ public static class Program
     {
         Console.Clear();
         if (args.Length == 0) {
-            StartRepl();
+            Test("let x = 10.01; println(x * 10);");
             return;
         }
         OpenFile(args[0]);
@@ -44,20 +44,20 @@ public static class Program
         Console.WriteLine($"({input}): ");
         Lexer lexer = new Lexer(input);
 
-        // Test lexer
+        // // Test lexer
         // Token tok = lexer.NextToken();
         // while (tok.Type != TokenType.EOF) {
         //     Console.WriteLine($"{tok.Type}: {tok.Literal}");
         //     tok = lexer.NextToken();
         // }
-        Parser parser = new Parser(lexer);
 
+        Parser parser = new Parser(lexer);
         // Test parser
         // foreach(var statement in parser.ParseProgram().Statements) {
         //     Console.WriteLine(statement);
         // }
 
-        // Test evaluator
+        // // Test evaluator
         Env env = new Env();
         env.Set("_name", new StringObj() { Value = "_main" });
         var evalutated = Evaluator.Eval(parser.ParseProgram(), env);

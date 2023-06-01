@@ -5,6 +5,7 @@ namespace objects;
 
 public enum ObjectType {
     INTEGER,
+    FLOAT,
     BOOLEAN,
     STRING,
     NULL,
@@ -37,6 +38,13 @@ public struct ExitObj : IObject {
 public struct Integer : IObject, IHashable {
     public long Value;
     public ObjectType Type() => ObjectType.INTEGER;
+    public string Inspect() => $"{Value}";
+    public HashKey HashKey() => new HashKey(this);
+}
+
+public struct Float : IObject, IHashable {
+    public double Value;
+    public ObjectType Type() => ObjectType.FLOAT;
     public string Inspect() => $"{Value}";
     public HashKey HashKey() => new HashKey(this);
 }
@@ -139,6 +147,10 @@ public struct HashKey {
         foreach (char ch in chars)
             Value += ((byte)ch);
         Type = ObjectType.STRING;
+    }
+    public HashKey(Float flt) {
+        Value = (UInt64)flt.Value;
+        Type = flt.Type();
     }
 }
 

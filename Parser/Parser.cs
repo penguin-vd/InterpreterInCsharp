@@ -39,6 +39,7 @@ public class Parser
         prefixParseFns = new Dictionary<TokenType, PrefixParseFn>();
         RegisterPrefix(TokenType.IDENT, ParseIdentifier);
         RegisterPrefix(TokenType.INT, ParseIntegerLiteral);
+        RegisterPrefix(TokenType.FLOAT, ParseFloatLiteral);
         RegisterPrefix(TokenType.BANG, ParsePrefixExpression);
         RegisterPrefix(TokenType.MINUS, ParsePrefixExpression);
         RegisterPrefix(TokenType.TRUE, ParseBoolean);
@@ -216,6 +217,17 @@ public class Parser
         IntergerLiteral literal = new IntergerLiteral() {TheToken = curToken};
 
         if (!long.TryParse(curToken.Literal, out long value)) {
+            Errors.Add($"could not parse {curToken.Literal} as integer");
+            return null;
+        }
+        literal.Value = value;
+        return literal;
+    }
+
+    private Expression? ParseFloatLiteral() {
+        FloatLiteral literal = new FloatLiteral() {TheToken = curToken};
+
+        if (!float.TryParse(curToken.Literal, out float value)) {
             Errors.Add($"could not parse {curToken.Literal} as integer");
             return null;
         }

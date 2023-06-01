@@ -131,7 +131,7 @@ public class Lexer
                     TokenType tokenType = LookupIdent(literal);
                     return new Token(tokenType, literal);
                 } else if (char.IsDigit(ch)) {
-                    return new Token(TokenType.INT, ReadNumber());
+                    return ReadNumber();
                 }
 
                 tok = new Token(TokenType.ILLEGAL, ch.ToString());
@@ -158,12 +158,17 @@ public class Lexer
         return Input.Substring(oldPos, position - oldPos);
     }
 
-    private string ReadNumber() {
+    private Token ReadNumber() {
         int oldPos = position;
-        while (char.IsDigit(ch)) {
+        bool isFloat = false;
+        while (char.IsDigit(ch) || ch == '.') {
             ReadChar();
+            if (ch == '.')
+                isFloat = true;
         }
-        return Input.Substring(oldPos, position - oldPos);
+        if (isFloat)
+            return new Token(TokenType.FLOAT, Input.Substring(oldPos, position - oldPos));
+        return new Token(TokenType.INT, Input.Substring(oldPos, position - oldPos));
     }
 
     private TokenType LookupIdent(string ident) {

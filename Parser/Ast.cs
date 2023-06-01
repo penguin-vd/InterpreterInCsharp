@@ -89,6 +89,14 @@ public struct IntergerLiteral : Expression {
     public override string ToString() => TheToken.Literal;
 }
 
+public struct FloatLiteral : Expression {
+    public Token TheToken;
+    public double Value;
+    public void ExpressionNode() {}
+    public string TokenLiteral() => TheToken.Literal;
+    public override string ToString() => TheToken.Literal;
+}
+
 public struct PrefixExpression : Expression {
     public Token TheToken;
     public string Operator;
