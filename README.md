@@ -5,6 +5,7 @@
 - Int
 - Bool
 - String
+- Float
 - Functions
 - Variables
 - JIT Interpreter
