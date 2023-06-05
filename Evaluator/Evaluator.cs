@@ -70,6 +70,7 @@ public static class Evaluator
                 if (Builtins.ContainsKey(letStatement.Name.Value))
                     return NewError("{0} is a builtin function", letStatement.Name.Value);
                 env.Set(letStatement.Name.Value, letVal);
+                GC.Collect();
                 break;
             case AssignStatement assignStatement:
                 var assignVal = Eval(assignStatement.Value, env);
@@ -78,6 +79,7 @@ public static class Evaluator
                 var assignRes = EvalAssignStatement(assignStatement, assignVal, env);
                 if (IsError(assignRes))
                     return assignRes;
+                GC.Collect();
                 break;
             case Identifier identifier:
                 return EvalIdentifier(identifier, env);
@@ -92,7 +94,9 @@ public static class Evaluator
                 var callArgs = EvalExpressions(callExpression.Arguments, env);
                 if (callArgs.Count == 1 && IsError(callArgs[0]))
                     return callArgs[0];
-                return ApplyFunction(function, callArgs, env);
+                var result = ApplyFunction(function, callArgs, env);
+                GC.Collect();
+                return result;
             case ArrayLiteral arrayLiteral:
                 var elements = EvalExpressions(arrayLiteral.Elements, env);
                 if (elements.Count == 1 && IsError(elements[0]))
@@ -210,7 +214,6 @@ public static class Evaluator
             default:
                 return NewError("operator '{0}' not recognized", op);
         }
-
     }
 
     private static IObject EvalPrefixExpression(string op, IObject obj) {
@@ -496,6 +499,5 @@ public static class Evaluator
         if (obj != null)
             return obj.Type() == ObjectType.ERROR;
         return false;
-
     }
 }

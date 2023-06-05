@@ -212,7 +212,7 @@ public static class BuiltinFunctions {
         long high = ((Integer)args[1]).Value;
         
         ArrayObj array = new ArrayObj() { Elements = new() };
-        foreach (int i in Enumerable.Range((int)low, (int)(high - low))) {
+        for (long i = low; i < high; i++) {
             array.Elements.Add(new Integer() { Value = i });
         }
 
