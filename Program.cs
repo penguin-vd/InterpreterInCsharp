@@ -8,9 +8,16 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        Console.Clear();
         if (args.Length == 0) {
             StartRepl();
+            return;
+        }
+        if (args[0] == "--time") {
+            if (args.Length < 2) {
+                Console.WriteLine("please specify the input");
+                return;
+            }
+            Time(args[1]);
             return;
         }
         OpenFile(args[0]);
@@ -38,6 +45,26 @@ public static class Program
             }
     }
 
+    private static void RunString(string input) {
+        Lexer lexer = new Lexer(input);
+        Parser parser = new Parser(lexer);
+        Env env = new Env();
+        env.Set("_name", new StringObj() { Value = "_main" });
+        var evalutated = Evaluator.Eval(parser.ParseProgram(), env);
+        Console.WriteLine(evalutated.Inspect());
+    }
+
+    private static void Time(string input) {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        if (File.Exists(input)) {
+            OpenFile(input);
+            watch.Stop();
+        } else {
+            RunString(input);
+            watch.Stop();
+        }
+        Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds}");
+    }
 
     // Testing enviroment to test new features
     private static void Test(string input) {

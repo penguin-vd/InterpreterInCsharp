@@ -70,7 +70,6 @@ public static class Evaluator
                 if (Builtins.ContainsKey(letStatement.Name.Value))
                     return NewError("{0} is a builtin function", letStatement.Name.Value);
                 env.Set(letStatement.Name.Value, letVal);
-                GC.Collect();
                 break;
             case AssignStatement assignStatement:
                 var assignVal = Eval(assignStatement.Value, env);
@@ -79,7 +78,6 @@ public static class Evaluator
                 var assignRes = EvalAssignStatement(assignStatement, assignVal, env);
                 if (IsError(assignRes))
                     return assignRes;
-                GC.Collect();
                 break;
             case Identifier identifier:
                 return EvalIdentifier(identifier, env);
@@ -95,7 +93,6 @@ public static class Evaluator
                 if (callArgs.Count == 1 && IsError(callArgs[0]))
                     return callArgs[0];
                 var result = ApplyFunction(function, callArgs, env);
-                GC.Collect();
                 return result;
             case ArrayLiteral arrayLiteral:
                 var elements = EvalExpressions(arrayLiteral.Elements, env);
@@ -407,8 +404,8 @@ public static class Evaluator
         switch (array) {
             case ArrayObj arrayObj:
                 var extEnv = Env.NewEnclosedEnviroment(env);
-                foreach(var obj in arrayObj.Elements) {
-                    extEnv.Set(expression.Iterative.Index.Value, obj);
+                for (int i = 0; i < arrayObj.Elements.Count; i++) {
+                    extEnv.Set(expression.Iterative.Index.Value, arrayObj.Elements[i]);
                     var res = Eval(expression.Body, extEnv);
                     if (res.Type() == ObjectType.BREAK)
                         break;
@@ -426,7 +423,7 @@ public static class Evaluator
             return NewError("wrong use of 'while', want BOOLEAN got {0}", condition.Type());
         var extEnv = Env.NewEnclosedEnviroment(env);
         while (((BooleanObj)condition).Value) {
-            var res = Eval(expression.Body, extEnv);
+            var res = EvalBlockStatement(expression.Body, extEnv);
             if (res.Type() == ObjectType.BREAK)
                 break;
             condition = Eval(expression.Condition, extEnv);
