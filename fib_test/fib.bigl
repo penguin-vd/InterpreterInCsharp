@@ -1,15 +1,12 @@
 let fib = fn (x) {
     let a = 0;
     let b = 1;
-    let i = 0;
-    while (i < x) {
+    for (i in range(0, x)) {
         let c = a + b;
-        a = b;
-        b = c;
-        i += 1;
+        let a = b;
+        let b = c;
     }
     return a;
 }
 
 fib(10000000);
-

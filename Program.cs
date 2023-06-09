@@ -63,7 +63,7 @@ public static class Program
             RunString(input);
             watch.Stop();
         }
-        Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds}");
+        Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
     }
 
     // Testing enviroment to test new features
