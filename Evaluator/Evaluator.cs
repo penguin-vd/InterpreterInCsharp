@@ -25,7 +25,8 @@ public static class Evaluator
         {"last", new BuiltinObj() { Function = BuiltinFunctions.Last } },
         {"push", new BuiltinObj() { Function = BuiltinFunctions.Push } },
         {"rest", new BuiltinObj() { Function = BuiltinFunctions.Rest } }, 
-        {"range", new BuiltinObj() { Function = BuiltinFunctions.Range } }
+        {"range", new BuiltinObj() { Function = BuiltinFunctions.Range } },
+        {"collect", new BuiltinObj() { Function = BuiltinFunctions.Collect } },
     };
     public static IObject Eval(Node node, Env env) {
         switch (node) {

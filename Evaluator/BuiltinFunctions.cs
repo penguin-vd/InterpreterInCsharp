@@ -219,6 +219,15 @@ public static class BuiltinFunctions {
         return array;
     }
 
+    public static IObject Collect(params IObject[] args) {
+        if (args.Length != 0) {
+            return NewError("wrong number of arguments. got={0}, want=0", args.Length);
+        }
+
+        GC.Collect();
+        return Evaluator.NULL;
+    }
+
     private static Error NewError(string format, params object[] args) {
         return new Error() {Message = string.Format(format, args)};
     }
