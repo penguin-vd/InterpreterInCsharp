@@ -228,6 +228,21 @@ public static class BuiltinFunctions {
         return Evaluator.NULL;
     }
 
+    public static IObject Clear(params IObject[] args) {
+        if (args.Length > 1) {
+            return NewError("wrong number of arguments. got={0}, want=0 or 1", args.Length);
+        }
+
+        if (args.Length == 0) {
+            Console.Clear();
+            return Evaluator.NULL;
+        }
+        
+        Console.Clear();
+        Console.WriteLine(args[0].Inspect());
+        return Evaluator.NULL;
+    }
+
     private static Error NewError(string format, params object[] args) {
         return new Error() {Message = string.Format(format, args)};
     }
