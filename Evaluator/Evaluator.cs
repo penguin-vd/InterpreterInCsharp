@@ -405,10 +405,19 @@ public static class Evaluator
         var array = Eval(expression.Iterative.Array, env);
         switch (array) {
             case ArrayObj arrayObj:
-                var extEnv = Env.NewEnclosedEnviroment(env);
+                var arrEnv = Env.NewEnclosedEnviroment(env);
                 for (int i = 0; i < arrayObj.Elements.Count; i++) {
-                    extEnv.Set(expression.Iterative.Index.Value, arrayObj.Elements[i]);
-                    var res = Eval(expression.Body, extEnv);
+                    arrEnv.Set(expression.Iterative.Index.Value, arrayObj.Elements[i]);
+                    var res = Eval(expression.Body, arrEnv);
+                    if (res.Type() == ObjectType.BREAK)
+                        break;
+                }
+                break;
+            case IterObj iterObj:
+                var iterEnv = Env.NewEnclosedEnviroment(env);
+                for (long i = iterObj.Low; i < iterObj.High; i += iterObj.Steps) {
+                    iterEnv.Set(expression.Iterative.Index.Value, new Integer() { Value = i });
+                    var res = Eval(expression.Body, iterEnv);
                     if (res.Type() == ObjectType.BREAK)
                         break;
                 }

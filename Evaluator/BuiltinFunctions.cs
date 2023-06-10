@@ -210,13 +210,7 @@ public static class BuiltinFunctions {
         
         long low = ((Integer)args[0]).Value;
         long high = ((Integer)args[1]).Value;
-        
-        ArrayObj array = new ArrayObj() { Elements = new() };
-        for (long i = low; i < high; i++) {
-            array.Elements.Add(new Integer() { Value = i });
-        }
-
-        return array;
+        return new IterObj() { Low = low, High = high, Steps = 1 };
     }
 
     public static IObject Collect(params IObject[] args) {

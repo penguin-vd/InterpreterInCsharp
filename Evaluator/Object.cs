@@ -18,6 +18,7 @@ public enum ObjectType {
     ARRAY,
     HASH,
     BREAK,
+    ITER,    
 }
 
 public interface IObject {
@@ -173,3 +174,12 @@ public struct Hash : IObject
         return $"{'{'}{string.Join(", ", pairs)}{'}'}";
     }
 }
+
+public struct IterObj : IObject {
+    public long Low;
+    public long High;
+    public long Steps;
+    public ObjectType Type() => ObjectType.ITER;
+    public string Inspect() => $"range({Low}, {High}, {Steps})";
+}
+
