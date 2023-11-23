@@ -415,7 +415,7 @@ public static class Evaluator
                 break;
             case IterObj iterObj:
                 var iterEnv = Env.NewEnclosedEnviroment(env);
-                for (long i = iterObj.Low; i < iterObj.High; i += iterObj.Steps) {
+                for (long i = iterObj.Low; i < iterObj.High; i++) {
                     iterEnv.Set(expression.Iterative.Index.Value, new Integer() { Value = i });
                     var res = Eval(expression.Body, iterEnv);
                     if (res.Type() == ObjectType.BREAK)

@@ -20,6 +20,16 @@ public static class Program
             Time(args[1]);
             return;
         }
+        
+        if (args[0] == "-i") {
+            if (args.Length < 2) {
+                Console.WriteLine("please specify the input");
+                return;
+            }
+            RunString(args[1]);
+            return;
+        }
+
         OpenFile(args[0]);
     }
     private static void StartRepl()
