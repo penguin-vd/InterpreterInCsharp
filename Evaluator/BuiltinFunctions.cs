@@ -5,6 +5,7 @@ using lexer;
 
 namespace BuiltinFn;
 public static class BuiltinFunctions {
+    public static Random RND = new Random();
     public static IObject GetLength(params IObject[] args) {
         if (args.Length != 1)
             return NewError($"wrong number of arguments. got {args.Length} want 1");
@@ -235,6 +236,24 @@ public static class BuiltinFunctions {
         Console.Clear();
         Console.WriteLine(args[0].Inspect());
         return Evaluator.NULL;
+    }
+
+    public static IObject Random(params IObject[] args) {
+        if (args.Length < 1 || args.Length > 2) {
+            return NewError("wrong number of arguments. got={0}, want=1 or 2", args.Length);
+        }
+
+        if (args[0].Type() != ObjectType.INTEGER || args[1].Type() != ObjectType.INTEGER) {
+            return NewError("wrong type expected. want=integer");
+        }
+
+        long low = ((Integer)args[0]).Value;
+        if (args.Length == 1) {
+            return new Integer() { Value = (long)RND.Next((int)low) };
+        }
+        
+        long high = ((Integer)args[1]).Value;
+        return new Integer() { Value = (long)RND.Next((int)low, (int)high) };
     }
 
     private static Error NewError(string format, params object[] args) {

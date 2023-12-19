@@ -1,0 +1,13 @@
+let num = random(1, 11);
+
+while (true) {
+    print("Guess a number: ");
+    let g = read();
+    if (isDigit(g)) {
+        if (toInt(g) == num) {
+            println("Correct!");
+            break;
+        }
+    }
+    println("Wrong number!");
+}

@@ -28,6 +28,7 @@ public static class Evaluator
         {"range", new BuiltinObj() { Function = BuiltinFunctions.Range } },
         {"collect", new BuiltinObj() { Function = BuiltinFunctions.Collect } },
         {"clear", new BuiltinObj() { Function = BuiltinFunctions.Clear } },
+        {"random", new BuiltinObj() { Function = BuiltinFunctions.Random } },
     };
     public static IObject Eval(Node node, Env env) {
         switch (node) {
