@@ -31,7 +31,7 @@ public interface IHashable {
 }
 
 public struct ExitObj : IObject {
-    public int Value;
+    public long Value;
     public ObjectType Type() => ObjectType.EXIT;
     public string Inspect() => $"{Value}";
 }

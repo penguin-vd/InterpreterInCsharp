@@ -100,7 +100,13 @@ public static class BuiltinFunctions {
     }
 
     public static IObject Exit(params IObject[] args) {
-        return new ExitObj() { Value = 0 };
+        long code = 0;
+        if (args.Length == 1) {
+            if (args[0].Type() == ObjectType.INTEGER) {
+                code = ((Integer)args[0]).Value;
+            }
+        }
+        return new ExitObj() { Value = code };
     }
 
     public static Env Include(params IObject[] args) {
